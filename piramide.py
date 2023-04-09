@@ -15,7 +15,7 @@ obsX_ini = 0.0
 obsY_ini = 0.0
 obsZ_ini = 0.0
 angle = 0.0
-FASPECT = 0.0
+fAspec = 0.0
 x_ini = 0.0
 y_ini = 0.0
 bot = 0.0
@@ -31,7 +31,7 @@ class Vertice:
 
 class Face:
 
-    def __init__(self, totalDeVertices: int, v1: Vertice, v2: Vertice, v3: Vertice, v4: Vertice):
+    def __init__(self, totalDeVertices: int, v1: int, v2: int, v3: int, v4: int):
         self.totalDeVertices = totalDeVertices
         self.face = [v1, v2, v3, v4]
 
@@ -65,11 +65,16 @@ piramide = Objeto(vertices, faces, 5)
 
 # Desenha um objeto em Wireframe
 def desenhaObjetoWireFrame(objeto: Objeto):
-    novoObjeto = objeto
+
     for face in objeto.faces:
         glBegin(GL_LINE_LOOP)
-        for vertice in objeto.vertices:
-            glVertex3f(vertice.x, vertice.y, vertice.z)
+        for v in face.face:
+            if v != -1:
+                glVertex3f(
+                    objeto.vertices[v].x,
+                    objeto.vertices[v].y,
+                    objeto.vertices[v].z,
+                )
         glEnd()
 
 
@@ -85,7 +90,10 @@ def desenha():
     glColor3f(0.5, 0.5, 0.5)
 
     # desenha o objeto definido anteriormente: uma pirâmide
-    desenhaObjetoWireFrame(piramide)
+    # desenhaObjetoWireFrame(piramide)
+
+    # glutWireCube(1)
+    glut
 
     # executa o comando OpenGL
     glFlush()
@@ -114,7 +122,7 @@ def especificaParametrosVisualizacao():
     glLoadIdentity()
 
     # especifica a projeção perspectiva (angulo, aspecto, zMin, zMax)
-    gluPerspective(angle, FASPECT, 0.1, 1200.0)
+    gluPerspective(angle, fAspec, 0.1, 1200.0)
 
     posicionaObservador()
 
@@ -125,17 +133,18 @@ def alteraTamanhoJanela(w: GLsizei, h: GLsizei):
         h = 1
 
     # especifica as dimensões da viewport
-    glViewport(0.0, 0.0, w, h)
+    glViewport(0, 0, w, h)
 
     # calcula a correção de aspecto
-    global FASPECT
-    FASPECT = GLfloat(w) / GLfloat(h)
+    global fAspec
+    fAspec = w / h
 
     especificaParametrosVisualizacao()
 
 
 # função de callback para eventos de botões do mouse
 def gerenciaMouse(button: int, state: int, x: int, y: int):
+    global x_ini, y_ini, obsX_ini, obsY_ini, obsZ_ini, rotX_ini, rotY_ini, bot
     if state == GLUT_DOWN:
         # salva os parametros atuais
         x_ini = x
@@ -157,6 +166,7 @@ SENS_TRANSL = 30.0
 
 # função de callback para eventos de movimento do mouse
 def gerenciaMovimento(x: int, y: int):
+    global rotX, rotY, obsZ, obsX, obsY
     # botao esquerdo
     if bot == GLUT_LEFT_BUTTON:
         # calcula as diferenças
@@ -189,8 +199,15 @@ def gerenciaMovimento(x: int, y: int):
     glutPostRedisplay()
 
 
+# função callback chamada para gerenciar eventos de teclas normais (ESC)
+def teclado(tecla: int, x: int, y: int):
+    if tecla == 27:
+        exit(0)
+
+
 # função de callback para tratar eventos de teclas especiais
 def teclasEspeciais(tecla: int, x: int, y: int):
+    global angle
     if tecla == GLUT_KEY_HOME:
         if angle >= 10.0:
             angle -= 5.0
@@ -202,3 +219,66 @@ def teclasEspeciais(tecla: int, x: int, y: int):
 
     especificaParametrosVisualizacao()
     glutPostRedisplay()
+
+
+# função responsável por inicializar parâmetros e variáveis
+def init():
+    # define a cor de fundo da janela de visualização como branca
+    glClearColor(1.0, 1.0, 1.0, 1.0)
+
+    # inicializa a variavel que especifica o ângulo de projeção / perspectiva
+    global angle
+    angle = 54
+
+    # inicializa as variáveis usadas para alterar a posição do observador virtual
+    global rotX, rotY, obsX, obsY, obsZ
+    rotX = 0
+    rotY = 0
+    obsX = 0
+    obsY = 0
+    obsZ = 10
+
+
+# programa principal
+def main():
+
+    glutInit()
+
+    # define do modo de operação da GLUT
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
+
+    # especifica a posição inicial da janela GLUT
+    glutInitWindowPosition(5, 5)
+
+    # especifica o tamanho inicial em pixels da janela GLUT
+    glutInitWindowSize(450, 450)
+
+    # cria a janela passando como argumento o título da mesma
+    glutCreateWindow("Wireframe Pirâmide 3D")
+
+    # registra a função de callback de redesenho da janela de visualização
+    glutDisplayFunc(desenha)
+
+    # registra a função de callback de redimensionamento da janela de visualização
+    glutReshapeFunc(alteraTamanhoJanela)
+
+    # registra a função de callback para tratamento das teclas normais
+    glutKeyboardFunc(teclado)
+
+    # registra a função de callback de tratamento das teclas especiais
+    glutSpecialFunc(teclasEspeciais)
+
+    # registra a função de callback para eventos de botoes do mouse
+    glutMouseFunc(gerenciaMouse)
+
+    # registra a função de callback para eventos de movimento do mouse
+    glutMotionFunc(gerenciaMovimento)
+
+    # chama a função responsável por fazer as inicializações
+    init()
+
+    # inicia o processamento e aguarda interações do usuário
+    glutMainLoop()
+
+
+main()

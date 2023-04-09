@@ -1,24 +1,54 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
-WINDOW_WIDTH = 640
-WINDOW_HEIGHT = 480
 
 
-def RenderScene():
+def desenha():
+
+    glClearColor(1.0, 1.0, 1.0, 1.0)
+
     glClear(GL_COLOR_BUFFER_BIT)
+
+    glColor3f(1.0, 0.0, 0.0)
+
+    glBegin(GL_TRIANGLES)
+    glVertex3f(-0.5, -0.5, 0.0)
+    glVertex3f(0.0, 0.5, 0.0)
+    glVertex3f(0.5, -0.5, 0.0)
+    glEnd()
+
     glFlush()
 
 
-def SetupRC():
-    glClearColor(0.0, 0.0, 0.0, 1.0)
+def teclado(key, x, y):
+    if key == 27:
+
+        exit(0)
 
 
-# main
-glutInit()
-glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA)
-glutCreateWindow("Simple")
-glutDisplayFunc(RenderScene)
-SetupRC()
+def init():
+    glMatrixMode(GL_PROJECTION)
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0)
+    glMatrixMode(GL_MODELVIEW)
 
-glutMainLoop()
+
+def main():
+
+    glutInit()
+
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
+
+    glutInitWindowSize(640, 480)
+
+    glutCreateWindow("Primeiro Programa")
+
+    glutDisplayFunc(desenha)
+
+    glutKeyboardFunc(teclado)
+
+    init()
+
+    glutMainLoop()
+
+
+main()
