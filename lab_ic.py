@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+from math import *
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -12,9 +13,15 @@ current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
 
+VIEW_RANGE = 500
+
 camera_x = 0
 camera_y = 0
 camera_z = 100
+
+camera_rot_vert = 0.0
+camera_rot_hori = 0.0
+
 camera_movement_velocity = 2
 camera_rotation_velocity = 0.4
 
@@ -22,8 +29,76 @@ focal_point_x = 0
 focal_point_y = 0
 focal_point_z = 0
 
-previous_mouse_x = None
-previous_mouse_y = None
+previous_mouse_x = 0
+previous_mouse_y = 0
+
+# -------------------
+def on_mouse_move(x, y):
+    global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
+
+    # Calculate the mouse movement
+    mouse_dx = x - previous_mouse_x
+    mouse_dy = y - previous_mouse_y
+
+    # Update the camera orientation
+    camera_rot_hori += mouse_dx * camera_rotation_velocity
+    camera_rot_vert += mouse_dy * camera_rotation_velocity
+
+    # Clamp the pitch to prevent the camera from flipping over
+    camera_rot_vert = max(-90.0, min(90.0, camera_rot_vert))
+
+    # Update the last mouse position
+    previous_mouse_x = x
+    previous_mouse_y = y
+
+def on_key_press(key, x, y):
+    global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
+
+    # Calculate the movement direction
+    speed = camera_movement_velocity
+    forward = [sin(radians(camera_rot_hori)), sin(radians(-camera_rot_vert)), -cos(radians(camera_rot_hori))]
+    right = [sin(radians(camera_rot_hori - 90)), 0, -cos(radians(camera_rot_hori - 90))]
+    
+    if key == b'\x1b':
+        glutDestroyWindow(glutGetWindow())
+    elif key == b'o' or key == b'O':
+        screen_handler()
+    elif key == b'w' or key == b'W':
+        camera_x += forward[0] * speed
+        camera_y += forward[1] * speed
+        camera_z += forward[2] * speed
+    elif key == b's' or key == b'S':
+        camera_x -= forward[0] * speed
+        camera_y -= forward[1] * speed
+        camera_z -= forward[2] * speed
+    elif key == b'a' or key == b'A':
+        camera_x += right[0] * speed
+        camera_y += right[1] * speed
+        camera_z += right[2] * speed
+    elif key == b'd' or key == b'D':
+        camera_x -= right[0] * speed
+        camera_y -= right[1] * speed
+        camera_z -= right[2] * speed
+# -------------------
+
+def draw_axis():
+    glColor3f(1, 0, 0)
+    glBegin(GL_LINES)
+    glVertex3f(1, 0, 0)
+    glVertex3f(camera_x + VIEW_RANGE, 0, 0)
+    glEnd()
+
+    glColor3f(0, 1, 0)
+    glBegin(GL_LINES)
+    glVertex3f(0, 1, 0)
+    glVertex3f(0, camera_y + VIEW_RANGE, 0)
+    glEnd()
+
+    glColor3f(0, 0, 1)
+    glBegin(GL_LINES)
+    glVertex3f(0, 0, 1)
+    glVertex3f(0, 0, camera_z + VIEW_RANGE)
+    glEnd()
 
 def draw_room_front_wall():
     glColor3f(1, 0, 0)
@@ -107,7 +182,6 @@ def draw_room():
     draw_room_roof()
     draw_room_floor()
 
-
 def display():
     glClearColor(1, 1, 1, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -118,7 +192,7 @@ def display():
     set_visualization()
 
     # begin draw code
-
+    draw_axis()
     draw_room()
     
     # end draw code
@@ -129,12 +203,17 @@ def set_visualization():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
 
-    gluPerspective(60, f_aspect, 0.5, 500)
+    gluPerspective(60, f_aspect, 0.5, VIEW_RANGE)
 
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
-    gluLookAt(camera_x, camera_y, camera_z, focal_point_x, focal_point_y, focal_point_z, 0, 1, 0)
+    up = [0.0, 1.0, 0.0]
+    at = [camera_x + sin(radians(camera_rot_hori)) * cos(radians(camera_rot_vert)),
+          camera_y + sin(radians(-camera_rot_vert)),
+          camera_z - cos(radians(camera_rot_hori)) * cos(radians(camera_rot_vert))]
+    
+    gluLookAt(camera_x, camera_y, camera_z, at[0], at[1], at[2], up[0], up[1], up[2])
 
 def idle_display():
     glutPostRedisplay()
@@ -150,67 +229,6 @@ def screen_handler():
     
     is_fullscreen = not is_fullscreen
 
-def move_camera_foward():
-    global camera_x, camera_y, camera_z
-    global focal_point_x, focal_point_y, focal_point_z
-
-    if focal_point_x > 0:
-        camera_x += camera_movement_velocity
-        focal_point_x += camera_movement_velocity
-    else:
-        camera_x -= camera_movement_velocity
-        focal_point_x -= camera_movement_velocity
-
-    if focal_point_y > 0:  
-        camera_y += camera_movement_velocity
-        focal_point_y += camera_movement_velocity
-    else:
-        camera_y -= camera_movement_velocity
-        focal_point_y -= camera_movement_velocity
-
-    camera_z -= camera_movement_velocity
-    focal_point_z -= camera_movement_velocity
-
-def move_camera_backward():
-    global camera_x, camera_y, camera_z
-    global focal_point_x, focal_point_y, focal_point_z
-
-    if focal_point_x > 0:
-        camera_x -= camera_movement_velocity
-        focal_point_x -= camera_movement_velocity
-    else:
-        camera_x += camera_movement_velocity
-        focal_point_x += camera_movement_velocity
-
-    if focal_point_y > 0:  
-        camera_y -= camera_movement_velocity
-        focal_point_y -= camera_movement_velocity
-    else:
-        camera_y += camera_movement_velocity
-        focal_point_y += camera_movement_velocity
-
-    camera_z += camera_movement_velocity
-    focal_point_z += camera_movement_velocity
-
-def keyboard_handler(key, mouse_x, mouse_y):
-    global camera_x, camera_y, camera_z
-    global focal_point_x, focal_point_y, focal_point_z
-
-    if key == b'\x1b':
-        glutDestroyWindow(glutGetWindow())
-    elif key == b'o' or key == b'O':
-        screen_handler()
-    elif key == b'a' or key == b'A':
-        camera_x -= camera_movement_velocity
-        focal_point_x -= camera_movement_velocity
-    elif key == b'd' or key == b'D':
-        camera_x += camera_movement_velocity
-        focal_point_x += camera_movement_velocity
-    elif key == b'w' or key == b'W':
-        move_camera_foward()
-    elif key == b's' or key == b'S':
-        move_camera_backward()
-
 def reshape(width, height):
     global current_window_width, current_window_height, f_aspect
 
@@ -219,44 +237,6 @@ def reshape(width, height):
     f_aspect = width/height
 
     glViewport(0, 0, width, height)
-
-def mouse_motion_handler(mouse_x, mouse_y):
-    global previous_mouse_x, previous_mouse_y
-    global focal_point_x, focal_point_y
-
-    window_center_x = int(glutGet(GLUT_WINDOW_WIDTH)/2)
-    window_center_y = int(glutGet(GLUT_WINDOW_HEIGHT)/2)
-
-    cursor_cage_dx = window_center_x*0.5
-    cursor_cage_dy = window_center_y*0.5
-
-
-    if mouse_x > window_center_x + cursor_cage_dx or mouse_x < window_center_x - cursor_cage_dx:
-        glutWarpPointer(window_center_x, window_center_y)
-
-    if mouse_y > window_center_y + cursor_cage_dy or mouse_y < window_center_y - cursor_cage_dy:
-        glutWarpPointer(window_center_x, window_center_y)
-
-    if previous_mouse_x == None or previous_mouse_y == None:
-        previous_mouse_x = mouse_x
-        previous_mouse_y = mouse_y
-    
-    if previous_mouse_x <= mouse_x:
-        focal_point_x += camera_rotation_velocity
-
-    if previous_mouse_x >= mouse_x:
-        focal_point_x -= camera_rotation_velocity 
-    
-    if previous_mouse_y <= mouse_y:
-        focal_point_y -= camera_rotation_velocity
-
-    if previous_mouse_y >= mouse_y:
-        focal_point_y += camera_rotation_velocity
-
-    previous_mouse_x = mouse_x
-    previous_mouse_y = mouse_y
-
-    
 
 def main():
     glutInit()
@@ -267,11 +247,11 @@ def main():
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     glutCreateWindow("Hello World")
 
-    glutSetCursor(GLUT_CURSOR_NONE)
+    #glutSetCursor(GLUT_CURSOR_NONE)
 
     glutDisplayFunc(display)
-    glutKeyboardFunc(keyboard_handler)
-    glutPassiveMotionFunc(mouse_motion_handler)
+    glutKeyboardFunc(on_key_press)
+    glutPassiveMotionFunc(on_mouse_move)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
     
