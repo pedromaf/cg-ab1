@@ -22,7 +22,7 @@ camera_z = 100
 camera_rot_vert = 0.0
 camera_rot_hori = 0.0
 
-camera_movement_velocity = 2
+camera_movement_velocity = 1
 camera_rotation_velocity = 0.4
 
 focal_point_x = 0
@@ -32,29 +32,41 @@ focal_point_z = 0
 previous_mouse_x = 0
 previous_mouse_y = 0
 
-# -------------------
-def on_mouse_move(x, y):
+def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
+    
+    center_x = int(int(glutGet(GLUT_WINDOW_WIDTH))/2)
+    center_y = int(int(glutGet(GLUT_WINDOW_HEIGHT))/2)
 
-    # Calculate the mouse movement
+    pointer_boundery_x = center_x * 0.5
+    pointer_boundery_y = center_y * 0.5
+
+    if x >= center_x + pointer_boundery_x or x <= center_x - pointer_boundery_x:
+        glutWarpPointer(center_x, center_y)
+        previous_mouse_x = center_x
+        previous_mouse_y = center_y
+        return
+    
+    if y >= center_y + pointer_boundery_y or y <= center_y - pointer_boundery_y:
+        glutWarpPointer(center_x, center_y)
+        previous_mouse_x = center_x
+        previous_mouse_y = center_y
+        return 
+    
     mouse_dx = x - previous_mouse_x
     mouse_dy = y - previous_mouse_y
 
-    # Update the camera orientation
     camera_rot_hori += mouse_dx * camera_rotation_velocity
     camera_rot_vert += mouse_dy * camera_rotation_velocity
 
-    # Clamp the pitch to prevent the camera from flipping over
-    camera_rot_vert = max(-90.0, min(90.0, camera_rot_vert))
+    camera_rot_vert = max(-89.0, min(89.0, camera_rot_vert))
 
-    # Update the last mouse position
     previous_mouse_x = x
     previous_mouse_y = y
 
-def on_key_press(key, x, y):
+def keyboard_handler(key, x, y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
 
-    # Calculate the movement direction
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(radians(-camera_rot_vert)), -cos(radians(camera_rot_hori))]
     right = [sin(radians(camera_rot_hori - 90)), 0, -cos(radians(camera_rot_hori - 90))]
@@ -79,7 +91,6 @@ def on_key_press(key, x, y):
         camera_x -= right[0] * speed
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
-# -------------------
 
 def draw_axis():
     glColor3f(1, 0, 0)
@@ -247,11 +258,11 @@ def main():
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     glutCreateWindow("Hello World")
 
-    #glutSetCursor(GLUT_CURSOR_NONE)
+    glutSetCursor(GLUT_CURSOR_NONE)
 
     glutDisplayFunc(display)
-    glutKeyboardFunc(on_key_press)
-    glutPassiveMotionFunc(on_mouse_move)
+    glutKeyboardFunc(keyboard_handler)
+    glutPassiveMotionFunc(mouse_movement_handler)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
     
