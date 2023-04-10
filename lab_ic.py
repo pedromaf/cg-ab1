@@ -5,6 +5,7 @@ from math import *
 
 from room import Room
 from axis import Axis
+from door import Door
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -35,8 +36,15 @@ focal_point_z = 0
 previous_mouse_x = 0
 previous_mouse_y = 0
 
+door_rotation_angle = 0
+door_is_opening = False
+door_is_closing = False
+door_open = False
+door_animation = False
+
 room = Room()
 axis = Axis()
+door = Door(room.x + 10, room.y, room.z, 10, 20)
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -72,7 +80,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
-    global room
+    global room, door_animation
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(radians(-camera_rot_vert)), -cos(radians(camera_rot_hori))]
@@ -99,6 +107,16 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
 
+def handle_door_animation():
+    global door_is_opening, door_is_closing, door_open
+
+    if door_open or door_is_opening:
+        door_is_closing = True
+        door_is_opening = False
+    else:
+        door_is_opening = True
+        door_is_closing = False
+
 def display():
     global room, axis
 
@@ -113,9 +131,31 @@ def display():
     # begin draw code
     axis.draw(camera_x, camera_y, camera_z, view_range)
     room.draw()
+    handle_door_draw()
+    
     # end draw code
 
     glutSwapBuffers()
+
+def handle_door_draw():
+    global door, door_is_opening, door_is_closing, door_open, door_rotation_angle
+    
+    if (door_is_opening and door_rotation_angle >= 90):
+        door_is_opening = False
+        door_open = True
+    elif (door_is_opening and door_rotation_angle < 90):
+        door.rotate(door_rotation_angle)
+        door_rotation_angle += 0.1
+    elif (door_is_closing and door_rotation_angle <= 0):
+        door_is_closing = False
+        door_open = False
+    elif (door_is_closing and door_rotation_angle > 0):
+        door.rotate(door_rotation_angle)
+        door_rotation_angle -= 0.1
+    elif (door_open):
+        door.rotate(90)
+    else:
+        door.draw()
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -134,6 +174,12 @@ def set_visualization():
     gluLookAt(camera_x, camera_y, camera_z, at[0], at[1], at[2], up[0], up[1], up[2])
 
 def idle_display():
+    global door_animation
+
+    if door_animation:
+        handle_door_animation()
+        door_animation = False
+
     glutPostRedisplay()
 
 def screen_handler():
@@ -156,6 +202,12 @@ def reshape(width, height):
 
     glViewport(0, 0, width, height)
 
+def mouse_action_handler(button, state, x, y):
+    global door_animation
+
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        door_animation = True
+    
 def main():
     glutInit()
     
@@ -170,6 +222,7 @@ def main():
     glutDisplayFunc(display)
     glutKeyboardFunc(keyboard_handler)
     glutPassiveMotionFunc(mouse_movement_handler)
+    glutMouseFunc(mouse_action_handler)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
     
