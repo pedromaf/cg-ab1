@@ -36,13 +36,9 @@ focal_point_z = 0
 previous_mouse_x = 0
 previous_mouse_y = 0
 
-door_rotation_angle = 0
-door_is_opening = False
-door_is_closing = False
-door_open = False
 door_animation = False
 
-room = Room()
+room = Room(0, 0, 0)
 axis = Axis()
 door = Door(room.x + 10, room.y, room.z, 10, 20)
 
@@ -107,20 +103,10 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
 
-def handle_door_animation():
-    global door_is_opening, door_is_closing, door_open
-
-    if door_open or door_is_opening:
-        door_is_closing = True
-        door_is_opening = False
-    else:
-        door_is_opening = True
-        door_is_closing = False
-
 def display():
-    global room, axis
+    global room, axis, door
 
-    glClearColor(1, 1, 1, 1)
+    glClearColor(0, 0, 0, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     
     glEnable(GL_DEPTH_TEST)
@@ -131,32 +117,12 @@ def display():
     # begin draw code
     axis.draw(camera_x, camera_y, camera_z, view_range)
     room.draw()
-    handle_door_draw()
+    door.draw()
     
     # end draw code
 
     glutSwapBuffers()
-
-def handle_door_draw():
-    global door, door_is_opening, door_is_closing, door_open, door_rotation_angle
     
-    if (door_is_opening and door_rotation_angle >= 90):
-        door_is_opening = False
-        door_open = True
-    elif (door_is_opening and door_rotation_angle < 90):
-        door.rotate(door_rotation_angle)
-        door_rotation_angle += 0.1
-    elif (door_is_closing and door_rotation_angle <= 0):
-        door_is_closing = False
-        door_open = False
-    elif (door_is_closing and door_rotation_angle > 0):
-        door.rotate(door_rotation_angle)
-        door_rotation_angle -= 0.1
-    elif (door_open):
-        door.rotate(90)
-    else:
-        door.draw()
-
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -177,9 +143,9 @@ def idle_display():
     global door_animation
 
     if door_animation:
-        handle_door_animation()
+        door.trigger_animation()
         door_animation = False
-
+    
     glutPostRedisplay()
 
 def screen_handler():
