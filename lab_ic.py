@@ -3,6 +3,9 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from math import *
 
+from room import Room
+from axis import Axis
+
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 WINDOW_POSITION_X = 200
@@ -13,7 +16,7 @@ current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
 
-VIEW_RANGE = 500
+view_range = 500
 
 camera_x = 0
 camera_y = 0
@@ -31,6 +34,9 @@ focal_point_z = 0
 
 previous_mouse_x = 0
 previous_mouse_y = 0
+
+room = Room()
+axis = Axis()
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -64,8 +70,9 @@ def mouse_movement_handler(x, y):
     previous_mouse_x = x
     previous_mouse_y = y
 
-def keyboard_handler(key, x, y):
+def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
+    global room
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(radians(-camera_rot_vert)), -cos(radians(camera_rot_hori))]
@@ -92,108 +99,9 @@ def keyboard_handler(key, x, y):
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
 
-def draw_axis():
-    glColor3f(1, 0, 0)
-    glBegin(GL_LINES)
-    glVertex3f(1, 0, 0)
-    glVertex3f(camera_x + VIEW_RANGE, 0, 0)
-    glEnd()
-
-    glColor3f(0, 1, 0)
-    glBegin(GL_LINES)
-    glVertex3f(0, 1, 0)
-    glVertex3f(0, camera_y + VIEW_RANGE, 0)
-    glEnd()
-
-    glColor3f(0, 0, 1)
-    glBegin(GL_LINES)
-    glVertex3f(0, 0, 1)
-    glVertex3f(0, 0, camera_z + VIEW_RANGE)
-    glEnd()
-
-def draw_room_front_wall():
-    glColor3f(1, 0, 0)
-    
-    glBegin(GL_QUADS)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0, 40, 0)
-    glVertex3f(10, 40, 0)
-    glVertex3f(10, 0, 0)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(10, 20, 0)
-    glVertex3f(10, 40, 0)
-    glVertex3f(20, 40, 0)
-    glVertex3f(20, 20, 0)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(20, 40, 0)
-    glVertex3f(20, 0, 0)
-    glVertex3f(50, 0, 0)
-    glVertex3f(50, 40, 0)
-    glEnd()
-
-def draw_room_back_wall():
-    glColor3f(1, 0, 1)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 40, -50)
-    glVertex3f(0, 0, -50)
-    glVertex3f(50, 0, -50)
-    glVertex3f(50, 40, -50)
-    glEnd()
-
-def draw_room_left_wall():
-    glColor3f(1, 1, 0)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0, 0, -50)
-    glVertex3f(0, 40, -50)
-    glVertex3f(0, 40, 0)
-    glEnd()
-
-def draw_room_right_wall():
-    glColor3f(0, 1, 1)
-
-    glBegin(GL_QUADS)
-    glVertex3f(50, 0, 0)
-    glVertex3f(50, 0, -50)
-    glVertex3f(50, 40, -50)
-    glVertex3f(50, 40, 0)
-    glEnd()
-
-def draw_room_roof():
-    glColor3f(0, 1, 0)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 40, 0)
-    glVertex3f(0, 40, -50)
-    glVertex3f(50, 40, -50)
-    glVertex3f(50, 40, 0)
-    glEnd()
-
-def draw_room_floor():
-    glColor3f(0, 0, 1)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0, 0, -50)
-    glVertex3f(50, 0, -50)
-    glVertex3f(50, 0, 0)
-    glEnd()
-
-def draw_room():
-    draw_room_front_wall()
-    draw_room_back_wall()
-    draw_room_left_wall()
-    draw_room_right_wall()
-    draw_room_roof()
-    draw_room_floor()
-
 def display():
+    global room, axis
+
     glClearColor(1, 1, 1, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     
@@ -203,9 +111,8 @@ def display():
     set_visualization()
 
     # begin draw code
-    draw_axis()
-    draw_room()
-    
+    axis.draw(camera_x, camera_y, camera_z, view_range)
+    room.draw()
     # end draw code
 
     glutSwapBuffers()
@@ -214,7 +121,7 @@ def set_visualization():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
 
-    gluPerspective(60, f_aspect, 0.5, VIEW_RANGE)
+    gluPerspective(60, f_aspect, 0.5, view_range)
 
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
