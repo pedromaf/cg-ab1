@@ -1,3 +1,4 @@
+import math
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -16,6 +17,7 @@ is_fullscreen = False
 current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
+angulo = 0.0
 
 view_range = 500
 
@@ -42,9 +44,81 @@ room = Room(0, 0, 0)
 axis = Axis()
 door = Door(room.x + 10, room.y, room.z, 10, 20)
 
+def draw_cylinder(height, radius, sides):
+    glBegin(GL_TRIANGLE_STRIP)
+    for i in range(sides + 1):
+        angle = 2 * math.pi * i / sides
+        x = radius * math.cos(angle)
+        z = radius * math.sin(angle)
+        glVertex3f(x, 0, z)
+        glVertex3f(x, height, z)
+    glEnd()
+
+    glBegin(GL_TRIANGLE_FAN)
+    glVertex3f(0, height, 0)
+    for i in range(sides + 1):
+        angle = 2 * math.pi * i / sides
+        x = radius * math.cos(angle)
+        z = radius * math.sin(angle)
+        glVertex3f(x, height, z)
+    glEnd()
+
+    glBegin(GL_TRIANGLE_FAN)
+    glVertex3f(0, 0, 0)
+    for i in range(sides + 1):
+        angle = 2 * math.pi * i / sides
+        x = radius * math.cos(angle)
+        z = radius * math.sin(angle)
+        glVertex3f(x, 0, z)
+    glEnd()
+
+def anima(value):
+    global angulo
+
+    angulo += 5.0
+
+    if (angulo > 360.0):
+        angulo = 0.0
+
+    glutPostRedisplay()
+    glutTimerFunc(10, anima, 1)
+
+def ventilador():
+    glColor3f(0.8, 0.8, 0.8)
+
+    glBegin(GL_QUADS)
+    glVertex3f(0.5, 0.0, 0.5)
+    glVertex3f(5.0, 0.0, 0.5)
+    glVertex3f(5.0, 0.0, -0.5)
+    glVertex3f(0.5, 0.0, -0.5)
+    glEnd()
+
+    glBegin(GL_QUADS)
+    glVertex3f(-0.5, 0.0, 0.5)
+    glVertex3f(-5.0, 0.0, 0.5)
+    glVertex3f(-5.0, 0.0, -0.5)
+    glVertex3f(-0.5, 0.0, -0.5)
+    glEnd()
+
+    glBegin(GL_QUADS)
+    glVertex3f(0.5, 0.0, -0.5)
+    glVertex3f(0.5, 0.0, -5.0)
+    glVertex3f(-0.5, 0.0, -5.0)
+    glVertex3f(-0.5, 0.0, -0.5)
+    glEnd()
+
+    glBegin(GL_QUADS)
+    glVertex3f(0.5, 0.0, 0.5)
+    glVertex3f(0.5, 0.0, 5.0)
+    glVertex3f(-0.5, 0.0, 5.0)
+    glVertex3f(-0.5, 0.0, 0.5)
+    glEnd()
+
+    draw_cylinder(2.0, 0.7, 360)
+
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
-    
+
     center_x = int(int(glutGet(GLUT_WINDOW_WIDTH))/2)
     center_y = int(int(glutGet(GLUT_WINDOW_HEIGHT))/2)
 
@@ -56,13 +130,13 @@ def mouse_movement_handler(x, y):
         previous_mouse_x = center_x
         previous_mouse_y = center_y
         return
-    
+
     if y >= center_y + pointer_boundery_y or y <= center_y - pointer_boundery_y:
         glutWarpPointer(center_x, center_y)
         previous_mouse_x = center_x
         previous_mouse_y = center_y
-        return 
-    
+        return
+
     mouse_dx = x - previous_mouse_x
     mouse_dy = y - previous_mouse_y
 
@@ -79,9 +153,11 @@ def keyboard_handler(key, mouse_x, mouse_y):
     global room, door_animation
 
     speed = camera_movement_velocity
-    forward = [sin(radians(camera_rot_hori)), sin(radians(-camera_rot_vert)), -cos(radians(camera_rot_hori))]
-    right = [sin(radians(camera_rot_hori - 90)), 0, -cos(radians(camera_rot_hori - 90))]
-    
+    forward = [sin(radians(camera_rot_hori)), sin(
+        radians(-camera_rot_vert)), -cos(radians(camera_rot_hori))]
+    right = [sin(radians(camera_rot_hori - 90)), 0, -
+             cos(radians(camera_rot_hori - 90))]
+
     if key == b'\x1b':
         glutDestroyWindow(glutGetWindow())
     elif key == b'o' or key == b'O':
@@ -108,7 +184,7 @@ def display():
 
     glClearColor(0, 0, 0, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    
+
     glEnable(GL_DEPTH_TEST)
     glEnableClientState(GL_VERTEX_ARRAY)
 
@@ -121,8 +197,17 @@ def display():
     
     # end draw code
 
+    glPushMatrix()
+
+    glRotatef(angulo, 0.0, 1.0, 0.0)
+    ventilador()
+
+    glPopMatrix()
+
+    # end draw code
+
     glutSwapBuffers()
-    
+
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -136,8 +221,10 @@ def set_visualization():
     at = [camera_x + sin(radians(camera_rot_hori)) * cos(radians(camera_rot_vert)),
           camera_y + sin(radians(-camera_rot_vert)),
           camera_z - cos(radians(camera_rot_hori)) * cos(radians(camera_rot_vert))]
-    
-    gluLookAt(camera_x, camera_y, camera_z, at[0], at[1], at[2], up[0], up[1], up[2])
+
+    gluLookAt(camera_x, camera_y, camera_z,
+              at[0], at[1], at[2], up[0], up[1], up[2])
+
 
 def idle_display():
     global door_animation
@@ -148,16 +235,18 @@ def idle_display():
     
     glutPostRedisplay()
 
+
 def screen_handler():
     global is_fullscreen
-        
+
     if is_fullscreen:
         glutReshapeWindow(WINDOW_WIDTH, WINDOW_HEIGHT)
         glutPositionWindow(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     else:
         glutFullScreen()
-    
+
     is_fullscreen = not is_fullscreen
+
 
 def reshape(width, height):
     global current_window_width, current_window_height, f_aspect
@@ -176,9 +265,9 @@ def mouse_action_handler(button, state, x, y):
     
 def main():
     glutInit()
-    
+
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
-    
+
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     glutCreateWindow("Hello World")
@@ -191,8 +280,10 @@ def main():
     glutMouseFunc(mouse_action_handler)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
-    
+    glutTimerFunc(10, anima, 1)
+
     glutMainLoop()
+
 
 if __name__ == "__main__":
     main()
