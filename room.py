@@ -1,6 +1,4 @@
 from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
 
 class Room:
     def __init__ (self):
