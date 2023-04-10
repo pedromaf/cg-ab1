@@ -1,10 +1,10 @@
 from OpenGL.GL import *
 
 class Room:
-    def __init__ (self):
-        self.x = 0
-        self.y = 0
-        self.z = 0
+    def __init__ (self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
     
     def draw_room_front_wall(self):
         glColor3f(1, 0, 0)
