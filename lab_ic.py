@@ -56,9 +56,9 @@ room_z = -10
 
 axis = Axis()
 
-window = Window(0, 0, 0)
+window = Window(room_x, room_y, room_z, room_width, room_height, room_z)
 
-room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
+room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x, window, 1)
 
 door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
 
