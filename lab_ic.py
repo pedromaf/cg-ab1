@@ -1,4 +1,3 @@
-import math
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -10,6 +9,8 @@ from door import Door
 from fan import Fan
 from table import Table
 from chair import Chair
+
+from text import *
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -73,6 +74,7 @@ back_chair3 = Chair(room_x + room_width/2, room_y, room_z - room_width + 15, 5, 
 
 def display():
     global room, axis, door
+    global camera_movement_velocity
 
     glClearColor(0, 0, 0, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -103,6 +105,8 @@ def display():
     back_chair2.draw()
     back_chair3.draw()
     # end draw code
+
+    draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25])
 
     glutSwapBuffers()
 
@@ -139,7 +143,7 @@ def mouse_movement_handler(x, y):
     previous_mouse_y = y
 
 def keyboard_handler(key, mouse_x, mouse_y):
-    global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
+    global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
     global room, door_animation
 
     speed = camera_movement_velocity
@@ -168,6 +172,12 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_x -= right[0] * speed
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
+    elif key == b'm' or key == b'M':
+        if (camera_movement_velocity < 10):
+            camera_movement_velocity += 0.5
+    elif key == b'n' or key == b'N':
+        if (camera_movement_velocity > 0.5):
+            camera_movement_velocity -= 0.5
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -187,7 +197,9 @@ def set_visualization():
               at[0], at[1], at[2], up[0], up[1], up[2])
 
 def idle_display():
-    global door_animation
+    global door_animation, camera_movement_velocity
+
+    print(camera_movement_velocity)
 
     if door_animation:
         door.trigger_animation()
@@ -215,7 +227,7 @@ def reshape(width, height):
 
     glViewport(0, 0, width, height)
 
-def mouse_action_handler(button, state, x, y):
+def mouse_action_handler(button, state, mouse_x, mouse_y):
     global door_animation
 
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
