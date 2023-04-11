@@ -56,7 +56,7 @@ room_z = -10
 
 axis = Axis()
 
-window = Window(room_x, room_y, room_z, room_width, room_height, room_z)
+window = Window(room_x, room_y, room_z, room_width, room_height, door_animation_speed)
 
 room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x, window, 1)
 
@@ -146,7 +146,7 @@ def keyboard_handler(key, mouse_x, mouse_y):
 
 
 def display():
-    global room, axis, door
+    global room, axis, door, window
 
     glClearColor(0, 0, 0, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -209,7 +209,6 @@ def idle_display():
     if window_animation:
         window.trigger_animation()
         window_animation = False
-
 
     glutPostRedisplay()
 

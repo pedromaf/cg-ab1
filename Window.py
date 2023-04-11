@@ -33,7 +33,6 @@ class Window:
         self.y = room_y + room_height/2
         self.z = room_z - room_width;
         self.total_width = self.board_width * 2 + self.window_width
-
         self.animation_speed = animation_speed
         self.vertices = [
             [self.x - self.window_width/2 - self.board_width, self.y + self.window_height/2, self.z], #upper left
@@ -140,7 +139,7 @@ class Window:
             self.is_open = True
         elif (self.is_opening and self.rotation_angle < 90):
             self.__rotate()
-            self.rotation_angle += 0.1 * self.animation_speed
+            self.rotation_angle += (0.1 * self.animation_speed)
         elif (self.is_closing and self.rotation_angle <= 0):
             self.is_closing = False
             self.is_open = False
