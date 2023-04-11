@@ -9,6 +9,7 @@ from axis import Axis
 from door import Door
 from fan import Fan
 from table import Table
+from chair import Chair
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -63,6 +64,13 @@ right_table = Table(room_x + room_width - 4, room_y, room_z - room_width * 0.70,
 
 back_table = Table(room_x + room_width/2, room_y, room_z - room_width + 4, 8, room_width * 0.73, 6, 1)
 
+right_chair = Chair(room_x + room_width - 10, room_y, room_z - room_width + 25, 5, 6, 1, 0)
+left_chair = Chair(room_x + 10,               room_y, room_z - room_width + 25, 5, 6, 1, 180)
+
+back_chair1 = Chair(room_x + room_width - 20, room_y, room_z - room_width + 15, 5, 6, 1, 90)
+back_chair2 = Chair(room_x + 20, room_y, room_z - room_width + 15, 5, 6, 1, 90)
+back_chair3 = Chair(room_x + room_width/2, room_y, room_z - room_width + 15, 5, 6, 1, 90)
+
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
 
@@ -95,7 +103,6 @@ def mouse_movement_handler(x, y):
     previous_mouse_x = x
     previous_mouse_y = y
 
-
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
     global room, door_animation
@@ -127,7 +134,6 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
 
-
 def display():
     global room, axis, door
 
@@ -141,17 +147,27 @@ def display():
 
     # begin draw code
     axis.draw(camera_x, camera_y, camera_z, view_range)
+
     room.draw()
+
     door.draw()
+
     left_fan.draw()
     right_fan.draw()
+
     left_table.draw()
     right_table.draw()
     back_table.draw()
+
+    right_chair.draw()
+    left_chair.draw()
+
+    back_chair1.draw()
+    back_chair2.draw()
+    back_chair3.draw()
     # end draw code
 
     glutSwapBuffers()
-
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -170,7 +186,6 @@ def set_visualization():
     gluLookAt(camera_x, camera_y, camera_z,
               at[0], at[1], at[2], up[0], up[1], up[2])
 
-
 def idle_display():
     global door_animation
 
@@ -179,7 +194,6 @@ def idle_display():
         door_animation = False
 
     glutPostRedisplay()
-
 
 def screen_handler():
     global is_fullscreen
@@ -192,7 +206,6 @@ def screen_handler():
 
     is_fullscreen = not is_fullscreen
 
-
 def reshape(width, height):
     global current_window_width, current_window_height, f_aspect
 
@@ -201,7 +214,6 @@ def reshape(width, height):
     f_aspect = width/height
 
     glViewport(0, 0, width, height)
-
 
 def mouse_action_handler(button, state, x, y):
     global door_animation
