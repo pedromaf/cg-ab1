@@ -3,6 +3,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from math import *
+from Window import Window
 
 from room import Room
 from axis import Axis
@@ -44,6 +45,9 @@ door_width = 10
 door_height = 20
 door_position_x = 10
 
+window_animation = False
+door_animation_speed = 4
+
 room_width = 70
 room_height = 40
 room_x = 20
@@ -51,6 +55,8 @@ room_y = 0
 room_z = -10
 
 axis = Axis()
+
+window = Window(0, 0, 0)
 
 room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
 
@@ -105,7 +111,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
-    global room, door_animation
+    global room, door_animation, window_animation
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -134,6 +140,11 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
 
+    elif key == b'z' or key == b'Z':
+        window_animation = True
+
+
+
 def display():
     global room, axis, door
 
@@ -151,6 +162,8 @@ def display():
     room.draw()
 
     door.draw()
+
+    window.draw()
 
     left_fan.draw()
     right_fan.draw()
@@ -187,11 +200,16 @@ def set_visualization():
               at[0], at[1], at[2], up[0], up[1], up[2])
 
 def idle_display():
-    global door_animation
+    global door_animation, window_animation
 
     if door_animation:
         door.trigger_animation()
         door_animation = False
+
+    if window_animation:
+        window.trigger_animation()
+        window_animation = False
+
 
     glutPostRedisplay()
 
