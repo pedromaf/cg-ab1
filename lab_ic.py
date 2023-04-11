@@ -8,6 +8,7 @@ from room import Room
 from axis import Axis
 from door import Door
 from fan import Fan
+from table import Table
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -44,6 +45,8 @@ axis = Axis()
 room = Room(0, 0, 0)
 door = Door(room.x + 10, room.y, room.z, 10, 20)
 fan = Fan(0, 0, 0)
+table = Table(10, 0, 10, 30, 50, 10, 1)
+
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -77,6 +80,7 @@ def mouse_movement_handler(x, y):
     previous_mouse_x = x
     previous_mouse_y = y
 
+
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
     global room, door_animation
@@ -108,6 +112,7 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
 
+
 def display():
     global room, axis, door
 
@@ -124,9 +129,11 @@ def display():
     room.draw()
     door.draw()
     fan.draw()
+    table.draw()
     # end draw code
 
     glutSwapBuffers()
+
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -145,14 +152,16 @@ def set_visualization():
     gluLookAt(camera_x, camera_y, camera_z,
               at[0], at[1], at[2], up[0], up[1], up[2])
 
+
 def idle_display():
     global door_animation
 
     if door_animation:
         door.trigger_animation()
         door_animation = False
-    
+
     glutPostRedisplay()
+
 
 def screen_handler():
     global is_fullscreen
@@ -165,6 +174,7 @@ def screen_handler():
 
     is_fullscreen = not is_fullscreen
 
+
 def reshape(width, height):
     global current_window_width, current_window_height, f_aspect
 
@@ -174,12 +184,14 @@ def reshape(width, height):
 
     glViewport(0, 0, width, height)
 
+
 def mouse_action_handler(button, state, x, y):
     global door_animation
 
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         door_animation = True
-    
+
+
 def main():
     glutInit()
 
@@ -200,6 +212,7 @@ def main():
     glutTimerFunc(10, fan.animation, 1)
 
     glutMainLoop()
+
 
 if __name__ == "__main__":
     main()
