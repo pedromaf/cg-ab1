@@ -32,15 +32,6 @@ class Fan:
         glEnd()
 
         glBegin(GL_TRIANGLE_FAN)
-        glVertex3f(0, height, 0)
-        for i in range(sides + 1):
-            angle = 2 * pi * i / sides
-            x = radius * cos(angle)
-            z = radius * sin(angle)
-            glVertex3f(x, height, z)
-        glEnd()
-
-        glBegin(GL_TRIANGLE_FAN)
         glVertex3f(0, 0, 0)
         for i in range(sides + 1):
             angle = 2 * pi * i / sides
