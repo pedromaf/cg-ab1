@@ -1,9 +1,9 @@
-import math
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from math import *
 
+from text import *
 from room import Room
 from axis import Axis
 from door import Door
@@ -11,6 +11,7 @@ from fan import Fan
 from table import Table
 from chair import Chair
 from board import Board
+
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -24,12 +25,12 @@ f_aspect = current_window_width/current_window_height
 
 view_range = 500
 
-camera_x = 20
-camera_y = 10
-camera_z = 30
+camera_x = 50
+camera_y = 25
+camera_z = -20
 camera_rot_vert = 0.0
 camera_rot_hori = 0.0
-camera_movement_velocity = 1
+camera_movement_velocity = 4
 camera_rotation_velocity = 0.4
 
 focal_point_x = 0
@@ -45,25 +46,74 @@ door_width = 10
 door_height = 20
 door_position_x = 10
 
-room_width = 50
+room_width = 70
 room_height = 40
 room_x = 20
 room_y = 0
 room_z = -10
 
 axis = Axis()
-room = Room(room_x, room_y, room_z, room_width, room_height,
-            door_width, door_height, door_position_x)
-door = Door(room_x + door_position_x, room_y, room_z,
-            door_width, door_height, door_animation_speed)
-fan1 = Fan(room_x + 40, room_y + room_height - 3, room_z - 15, 1.5)
-fan2 = Fan(room_x + 10, room_y + room_height - 3, room_z - 15, 1.5)
-fan3 = Fan(room_x + 10, room_y + room_height - 3, room_z - 35, 1.5)
-fan4 = Fan(room_x + 40, room_y + room_height - 3, room_z - 35, 1.5)
-table = Table(10, 0, 10, 30, 50, 10, 1)
-chair = Chair(10, 30, 10, 5, 5, 1)
+
+room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
+
+door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
+
+left_fan = Fan(room_x + room_width * 0.30,  room_y + room_height - 3, room_z - room_width * 0.5, 1.5)
+right_fan = Fan(room_x + room_width * 0.70, room_y + room_height - 3, room_z - room_width * 0.5, 1.5)
+
+left_table = Table(room_x + 4,               room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
+right_table = Table(room_x + room_width - 4, room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
+
+back_table = Table(room_x + room_width/2, room_y, room_z - room_width + 4, 8, room_width * 0.73, 6, 1)
+
+right_chair = Chair(room_x + room_width - 10, room_y, room_z - room_width + 25, 5, 6, 1, 0)
+left_chair = Chair(room_x + 10,               room_y, room_z - room_width + 25, 5, 6, 1, 180)
+
+back_chair1 = Chair(room_x + room_width - 20, room_y, room_z - room_width + 15, 5, 6, 1, 90)
+back_chair2 = Chair(room_x + 20, room_y, room_z - room_width + 15, 5, 6, 1, 90)
+back_chair3 = Chair(room_x + room_width/2, room_y, room_z - room_width + 15, 5, 6, 1, 90)
+
 board = Board(0, 0, 0, 13, 20, 0.3, 1)
 
+def display():
+    global room, axis, door
+    global camera_movement_velocity
+
+    glClearColor(0, 0, 0, 1)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    glEnable(GL_DEPTH_TEST)
+    glEnableClientState(GL_VERTEX_ARRAY)
+
+    set_visualization()
+
+    # begin draw code
+    axis.draw(camera_x, camera_y, camera_z, view_range)
+
+    room.draw()
+
+    door.draw()
+
+    left_fan.draw()
+    right_fan.draw()
+
+    left_table.draw()
+    right_table.draw()
+    back_table.draw()
+
+    right_chair.draw()
+    left_chair.draw()
+
+    back_chair1.draw()
+    back_chair2.draw()
+    back_chair3.draw()
+
+    board.draw()
+    # end draw code
+
+    draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25])
+
+    glutSwapBuffers()
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -97,9 +147,8 @@ def mouse_movement_handler(x, y):
     previous_mouse_x = x
     previous_mouse_y = y
 
-
 def keyboard_handler(key, mouse_x, mouse_y):
-    global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
+    global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
     global room, door_animation
 
     speed = camera_movement_velocity
@@ -128,30 +177,12 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_x -= right[0] * speed
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
-
-
-def display():
-    global room, axis, door
-
-    glClearColor(0, 0, 0, 1)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-    glEnable(GL_DEPTH_TEST)
-    glEnableClientState(GL_VERTEX_ARRAY)
-
-    set_visualization()
-
-    # begin draw code
-    axis.draw(camera_x, camera_y, camera_z, view_range)
-    room.draw()
-    door.draw()
-    # table.draw()
-    chair.draw()
-    board.draw()
-    # end draw code
-
-    glutSwapBuffers()
-
+    elif key == b'm' or key == b'M':
+        if (camera_movement_velocity < 10):
+            camera_movement_velocity += 0.5
+    elif key == b'n' or key == b'N':
+        if (camera_movement_velocity > 0.5):
+            camera_movement_velocity -= 0.5
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -170,7 +201,6 @@ def set_visualization():
     gluLookAt(camera_x, camera_y, camera_z,
               at[0], at[1], at[2], up[0], up[1], up[2])
 
-
 def idle_display():
     global door_animation
 
@@ -179,7 +209,6 @@ def idle_display():
         door_animation = False
 
     glutPostRedisplay()
-
 
 def screen_handler():
     global is_fullscreen
@@ -192,7 +221,6 @@ def screen_handler():
 
     is_fullscreen = not is_fullscreen
 
-
 def reshape(width, height):
     global current_window_width, current_window_height, f_aspect
 
@@ -202,13 +230,11 @@ def reshape(width, height):
 
     glViewport(0, 0, width, height)
 
-
-def mouse_action_handler(button, state, x, y):
+def mouse_action_handler(button, state, mouse_x, mouse_y):
     global door_animation
 
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         door_animation = True
-
 
 def main():
     glutInit()
@@ -227,10 +253,8 @@ def main():
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
 
-    glutTimerFunc(100, fan1.animation, 1)
-    glutTimerFunc(100, fan2.animation, 2)
-    glutTimerFunc(100, fan3.animation, 3)
-    glutTimerFunc(100, fan4.animation, 4)
+    glutTimerFunc(100, left_fan.animation, 1)
+    glutTimerFunc(100, right_fan.animation, 2)
 
     glutMainLoop()
 

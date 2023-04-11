@@ -78,11 +78,17 @@ class Room:
 
         self.draw_room_front_wall()
         self.draw_room_back_wall()
+
+        glColor3f(0.5, 0.5, 0.5)
+
         self.draw_room_left_wall()
         self.draw_room_right_wall()
 
         glColor3f(0.1, 0.1, 0.1)
         
-        self.draw_room_roof()
         self.draw_room_floor()
+
+        glColor3f(0.3, 0.3, 0.3)
+
+        self.draw_room_roof()
 
