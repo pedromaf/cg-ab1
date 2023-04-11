@@ -2,7 +2,6 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from math import *
 
-
 class Chair:
     def __init__(self, x, y, z, height, side, size, rotation_angle):
         self.x = x

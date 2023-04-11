@@ -4,7 +4,7 @@ from math import *
 
 
 class Board:
-    def __init__(self, x, y, z, height, width, depth, size):
+    def __init__(self, x, y, z, height, width, depth, size, rotation_angle):
         self.x = x
         self.y = y
         self.z = z
@@ -12,11 +12,13 @@ class Board:
         self.width = width
         self.depth = depth
         self.size = size
+        self.rotation_angle = rotation_angle
 
     def draw(self):
         glPushMatrix()
         glScalef(self.size, self.size, self.size)
-        glTranslatef(self.x, self.y, self.z)
+        glTranslate(self.x, self.y, self.z)
+        glRotate(self.rotation_angle, 0, 1, 0)
         self.__draw_object()
         glPopMatrix()
 

@@ -12,7 +12,6 @@ from table import Table
 from chair import Chair
 from board import Board
 
-
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 WINDOW_POSITION_X = 200
@@ -27,7 +26,7 @@ view_range = 500
 
 camera_x = 50
 camera_y = 25
-camera_z = -20
+camera_z = 50
 camera_rot_vert = 0.0
 camera_rot_hori = 0.0
 camera_movement_velocity = 4
@@ -52,6 +51,8 @@ room_x = 20
 room_y = 0
 room_z = -10
 
+axis_enabled = True
+
 axis = Axis()
 
 room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
@@ -73,11 +74,11 @@ back_chair1 = Chair(room_x + room_width - 20, room_y, room_z - room_width + 15, 
 back_chair2 = Chair(room_x + 20, room_y, room_z - room_width + 15, 5, 6, 1, 90)
 back_chair3 = Chair(room_x + room_width/2, room_y, room_z - room_width + 15, 5, 6, 1, 90)
 
-board = Board(0, 0, 0, 13, 20, 0.3, 1)
+board = Board(room_x + 45, room_y + 15, room_z - 0.4, 15, 25, 0.3, 1, 180)
 
 def display():
     global room, axis, door
-    global camera_movement_velocity
+    global camera_movement_velocity, current_window_width, current_window_height
 
     glClearColor(0, 0, 0, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -88,7 +89,8 @@ def display():
     set_visualization()
 
     # begin draw code
-    axis.draw(camera_x, camera_y, camera_z, view_range)
+    if axis_enabled:
+        axis.draw(camera_x, camera_y, camera_z, view_range)
 
     room.draw()
 
@@ -109,9 +111,9 @@ def display():
     back_chair3.draw()
 
     board.draw()
-    # end draw code
 
-    draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25])
+    draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25], current_window_width, current_window_height)
+    # end draw code
 
     glutSwapBuffers()
 
@@ -149,7 +151,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
-    global room, door_animation
+    global room, door_animation, axis_enabled
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -183,6 +185,8 @@ def keyboard_handler(key, mouse_x, mouse_y):
     elif key == b'n' or key == b'N':
         if (camera_movement_velocity > 0.5):
             camera_movement_velocity -= 0.5
+    elif key == b'x' or key == b'X':
+        axis_enabled = not axis_enabled
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
