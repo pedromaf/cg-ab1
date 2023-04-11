@@ -11,6 +11,7 @@ from fan import Fan
 from table import Table
 from chair import Chair
 from board import Board
+from Window import Window
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -51,11 +52,21 @@ room_x = 20
 room_y = 0
 room_z = -10
 
+door_animation_speed = 10
+window_animation_speed = 10
+
+window_animation = False
+number_of_windows = 3
+center_window = int(number_of_windows/2)
+windows = []
+for i in range(-number_of_windows+1, 1):
+    windows.append(Window(room_x, room_y, room_z, room_width, room_height, window_animation_speed, i))
+
 axis_enabled = True
 
 axis = Axis()
 
-room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
+room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x, windows[center_window], number_of_windows)
 
 door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
 
@@ -94,6 +105,9 @@ def display():
 
     room.draw()
 
+    for window in windows:
+        window.draw()
+
     door.draw()
 
     left_fan.draw()
@@ -112,11 +126,13 @@ def display():
 
     board.draw()
 
-    draw_text(f"[W, A, S, D] Navigate", [0, current_window_height], current_window_width, current_window_height)
-    draw_text(f"[N] Decrease speed", [0, current_window_height - 25], current_window_width, current_window_height)
-    draw_text(f"[M] Increase speed", [0, current_window_height - 50], current_window_width, current_window_height)
-    draw_text(f"[O] Fullscreen", [0, current_window_height - 75], current_window_width, current_window_height)
-    draw_text(f"[X] Show axis", [0, current_window_height - 100], current_window_width, current_window_height)
+    draw_text(f"[Mouse Left] Control door", [0, current_window_height], current_window_width, current_window_height)
+    draw_text(f"[W, A, S, D] Navigate", [0, current_window_height - 25], current_window_width, current_window_height)
+    draw_text(f"[Z] Control windows", [0, current_window_height - 50], current_window_width, current_window_height)
+    draw_text(f"[N] Decrease speed", [0, current_window_height - 75], current_window_width, current_window_height)
+    draw_text(f"[M] Increase speed", [0, current_window_height - 100], current_window_width, current_window_height)
+    draw_text(f"[O] Fullscreen", [0, current_window_height - 125], current_window_width, current_window_height)
+    draw_text(f"[X] Show axis", [0, current_window_height - 150], current_window_width, current_window_height)
     
     draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25], current_window_width, current_window_height)
     # end draw code
@@ -157,7 +173,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
-    global room, door_animation, axis_enabled
+    global room, door_animation, axis_enabled, window_animation
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -185,6 +201,8 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_x -= right[0] * speed
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
+    elif key == b'z' or key == b'Z':
+        window_animation = True
     elif key == b'm' or key == b'M':
         if (camera_movement_velocity < 10):
             camera_movement_velocity += 0.5
@@ -212,11 +230,16 @@ def set_visualization():
               at[0], at[1], at[2], up[0], up[1], up[2])
 
 def idle_display():
-    global door_animation
+    global door_animation, window_animation
 
     if door_animation:
         door.trigger_animation()
         door_animation = False
+
+    if window_animation:
+        for window in windows:
+            window.trigger_animation()
+        window_animation = False
 
     glutPostRedisplay()
 
