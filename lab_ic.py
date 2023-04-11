@@ -4,6 +4,11 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from math import *
 
+from room import Room
+from axis import Axis
+from door import Door
+from fan import Fan
+
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 WINDOW_POSITION_X = 200
@@ -13,9 +18,8 @@ is_fullscreen = False
 current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
-angulo = 0.0
 
-VIEW_RANGE = 500
+view_range = 500
 
 camera_x = 0
 camera_y = 0
@@ -34,81 +38,12 @@ focal_point_z = 0
 previous_mouse_x = 0
 previous_mouse_y = 0
 
+door_animation = False
 
-def draw_cylinder(height, radius, sides):
-    glBegin(GL_TRIANGLE_STRIP)
-    for i in range(sides + 1):
-        angle = 2 * math.pi * i / sides
-        x = radius * math.cos(angle)
-        z = radius * math.sin(angle)
-        glVertex3f(x, 0, z)
-        glVertex3f(x, height, z)
-    glEnd()
-
-    glBegin(GL_TRIANGLE_FAN)
-    glVertex3f(0, height, 0)
-    for i in range(sides + 1):
-        angle = 2 * math.pi * i / sides
-        x = radius * math.cos(angle)
-        z = radius * math.sin(angle)
-        glVertex3f(x, height, z)
-    glEnd()
-
-    glBegin(GL_TRIANGLE_FAN)
-    glVertex3f(0, 0, 0)
-    for i in range(sides + 1):
-        angle = 2 * math.pi * i / sides
-        x = radius * math.cos(angle)
-        z = radius * math.sin(angle)
-        glVertex3f(x, 0, z)
-    glEnd()
-
-
-def anima(value):
-    global angulo
-
-    angulo += 5.0
-
-    if (angulo > 360.0):
-        angulo = 0.0
-
-    glutPostRedisplay()
-    glutTimerFunc(10, anima, 1)
-
-
-def ventilador():
-    glColor3f(0.8, 0.8, 0.8)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0.5, 0.0, 0.5)
-    glVertex3f(5.0, 0.0, 0.5)
-    glVertex3f(5.0, 0.0, -0.5)
-    glVertex3f(0.5, 0.0, -0.5)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(-0.5, 0.0, 0.5)
-    glVertex3f(-5.0, 0.0, 0.5)
-    glVertex3f(-5.0, 0.0, -0.5)
-    glVertex3f(-0.5, 0.0, -0.5)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(0.5, 0.0, -0.5)
-    glVertex3f(0.5, 0.0, -5.0)
-    glVertex3f(-0.5, 0.0, -5.0)
-    glVertex3f(-0.5, 0.0, -0.5)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(0.5, 0.0, 0.5)
-    glVertex3f(0.5, 0.0, 5.0)
-    glVertex3f(-0.5, 0.0, 5.0)
-    glVertex3f(-0.5, 0.0, 0.5)
-    glEnd()
-
-    draw_cylinder(2.0, 0.7, 360)
-
+axis = Axis()
+room = Room(0, 0, 0)
+door = Door(room.x + 10, room.y, room.z, 10, 20)
+fan = Fan(0, 0, 0)
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -142,9 +77,9 @@ def mouse_movement_handler(x, y):
     previous_mouse_x = x
     previous_mouse_y = y
 
-
-def keyboard_handler(key, x, y):
+def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert
+    global room, door_animation
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -173,118 +108,10 @@ def keyboard_handler(key, x, y):
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
 
-
-def draw_axis():
-    glColor3f(1, 0, 0)
-    glBegin(GL_LINES)
-    glVertex3f(1, 0, 0)
-    glVertex3f(camera_x + VIEW_RANGE, 0, 0)
-    glEnd()
-
-    glColor3f(0, 1, 0)
-    glBegin(GL_LINES)
-    glVertex3f(0, 1, 0)
-    glVertex3f(0, camera_y + VIEW_RANGE, 0)
-    glEnd()
-
-    glColor3f(0, 0, 1)
-    glBegin(GL_LINES)
-    glVertex3f(0, 0, 1)
-    glVertex3f(0, 0, camera_z + VIEW_RANGE)
-    glEnd()
-
-
-def draw_room_front_wall():
-    glColor3f(1, 0, 0)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0, 40, 0)
-    glVertex3f(10, 40, 0)
-    glVertex3f(10, 0, 0)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(10, 20, 0)
-    glVertex3f(10, 40, 0)
-    glVertex3f(20, 40, 0)
-    glVertex3f(20, 20, 0)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(20, 40, 0)
-    glVertex3f(20, 0, 0)
-    glVertex3f(50, 0, 0)
-    glVertex3f(50, 40, 0)
-    glEnd()
-
-
-def draw_room_back_wall():
-    glColor3f(1, 0, 1)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 40, -50)
-    glVertex3f(0, 0, -50)
-    glVertex3f(50, 0, -50)
-    glVertex3f(50, 40, -50)
-    glEnd()
-
-
-def draw_room_left_wall():
-    glColor3f(1, 1, 0)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0, 0, -50)
-    glVertex3f(0, 40, -50)
-    glVertex3f(0, 40, 0)
-    glEnd()
-
-
-def draw_room_right_wall():
-    glColor3f(0, 1, 1)
-
-    glBegin(GL_QUADS)
-    glVertex3f(50, 0, 0)
-    glVertex3f(50, 0, -50)
-    glVertex3f(50, 40, -50)
-    glVertex3f(50, 40, 0)
-    glEnd()
-
-
-def draw_room_roof():
-    glColor3f(0, 1, 0)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 40, 0)
-    glVertex3f(0, 40, -50)
-    glVertex3f(50, 40, -50)
-    glVertex3f(50, 40, 0)
-    glEnd()
-
-
-def draw_room_floor():
-    glColor3f(0, 0, 1)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0, 0, -50)
-    glVertex3f(50, 0, -50)
-    glVertex3f(50, 0, 0)
-    glEnd()
-
-
-def draw_room():
-    draw_room_front_wall()
-    draw_room_back_wall()
-    draw_room_left_wall()
-    draw_room_right_wall()
-    draw_room_roof()
-    draw_room_floor()
-
-
 def display():
-    glClearColor(1, 1, 1, 1)
+    global room, axis, door
+
+    glClearColor(0, 0, 0, 1)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     glEnable(GL_DEPTH_TEST)
@@ -293,26 +120,19 @@ def display():
     set_visualization()
 
     # begin draw code
-    draw_axis()
-    draw_room()
-
-    glPushMatrix()
-
-    glRotatef(angulo, 0.0, 1.0, 0.0)
-    ventilador()
-
-    glPopMatrix()
-
+    axis.draw(camera_x, camera_y, camera_z, view_range)
+    room.draw()
+    door.draw()
+    fan.draw()
     # end draw code
 
     glutSwapBuffers()
-
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
 
-    gluPerspective(60, f_aspect, 0.5, VIEW_RANGE)
+    gluPerspective(60, f_aspect, 0.5, view_range)
 
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
@@ -325,10 +145,14 @@ def set_visualization():
     gluLookAt(camera_x, camera_y, camera_z,
               at[0], at[1], at[2], up[0], up[1], up[2])
 
-
 def idle_display():
-    glutPostRedisplay()
+    global door_animation
 
+    if door_animation:
+        door.trigger_animation()
+        door_animation = False
+    
+    glutPostRedisplay()
 
 def screen_handler():
     global is_fullscreen
@@ -341,7 +165,6 @@ def screen_handler():
 
     is_fullscreen = not is_fullscreen
 
-
 def reshape(width, height):
     global current_window_width, current_window_height, f_aspect
 
@@ -351,7 +174,12 @@ def reshape(width, height):
 
     glViewport(0, 0, width, height)
 
+def mouse_action_handler(button, state, x, y):
+    global door_animation
 
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        door_animation = True
+    
 def main():
     glutInit()
 
@@ -366,12 +194,12 @@ def main():
     glutDisplayFunc(display)
     glutKeyboardFunc(keyboard_handler)
     glutPassiveMotionFunc(mouse_movement_handler)
+    glutMouseFunc(mouse_action_handler)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
-    glutTimerFunc(10, anima, 1)
+    glutTimerFunc(10, fan.animation, 1)
 
     glutMainLoop()
-
 
 if __name__ == "__main__":
     main()
