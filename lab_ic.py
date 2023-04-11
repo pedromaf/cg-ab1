@@ -197,9 +197,7 @@ def set_visualization():
               at[0], at[1], at[2], up[0], up[1], up[2])
 
 def idle_display():
-    global door_animation, camera_movement_velocity
-
-    print(camera_movement_velocity)
+    global door_animation
 
     if door_animation:
         door.trigger_animation()
