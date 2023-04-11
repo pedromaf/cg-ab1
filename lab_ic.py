@@ -71,6 +71,41 @@ back_chair1 = Chair(room_x + room_width - 20, room_y, room_z - room_width + 15, 
 back_chair2 = Chair(room_x + 20, room_y, room_z - room_width + 15, 5, 6, 1, 90)
 back_chair3 = Chair(room_x + room_width/2, room_y, room_z - room_width + 15, 5, 6, 1, 90)
 
+def display():
+    global room, axis, door
+
+    glClearColor(0, 0, 0, 1)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    glEnable(GL_DEPTH_TEST)
+    glEnableClientState(GL_VERTEX_ARRAY)
+
+    set_visualization()
+
+    # begin draw code
+    axis.draw(camera_x, camera_y, camera_z, view_range)
+
+    room.draw()
+
+    door.draw()
+
+    left_fan.draw()
+    right_fan.draw()
+
+    left_table.draw()
+    right_table.draw()
+    back_table.draw()
+
+    right_chair.draw()
+    left_chair.draw()
+
+    back_chair1.draw()
+    back_chair2.draw()
+    back_chair3.draw()
+    # end draw code
+
+    glutSwapBuffers()
+
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
 
@@ -133,41 +168,6 @@ def keyboard_handler(key, mouse_x, mouse_y):
         camera_x -= right[0] * speed
         camera_y -= right[1] * speed
         camera_z -= right[2] * speed
-
-def display():
-    global room, axis, door
-
-    glClearColor(0, 0, 0, 1)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-    glEnable(GL_DEPTH_TEST)
-    glEnableClientState(GL_VERTEX_ARRAY)
-
-    set_visualization()
-
-    # begin draw code
-    axis.draw(camera_x, camera_y, camera_z, view_range)
-
-    room.draw()
-
-    door.draw()
-
-    left_fan.draw()
-    right_fan.draw()
-
-    left_table.draw()
-    right_table.draw()
-    back_table.draw()
-
-    right_chair.draw()
-    left_chair.draw()
-
-    back_chair1.draw()
-    back_chair2.draw()
-    back_chair3.draw()
-    # end draw code
-
-    glutSwapBuffers()
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
