@@ -45,20 +45,25 @@ door_width = 10
 door_height = 20
 door_position_x = 10
 
-window_animation = False
-door_animation_speed = 4
-
 room_width = 70
 room_height = 40
 room_x = 20
 room_y = 0
 room_z = -10
 
+window_animation = False
+door_animation_speed = 4
+number_of_windows = 3
+center_window = int(number_of_windows/2)
+windows=[]
+for i in range(-number_of_windows+1, 1):
+    windows.append(Window(room_x, room_y, room_z, room_width, room_height, door_animation_speed, i))
+
+
 axis = Axis()
 
-window = Window(room_x, room_y, room_z, room_width, room_height, door_animation_speed)
 
-room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x, window, 1)
+room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x, windows[center_window], number_of_windows)
 
 door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
 
@@ -163,7 +168,8 @@ def display():
 
     door.draw()
 
-    window.draw()
+    for window in windows:
+        window.draw()
 
     left_fan.draw()
     right_fan.draw()
@@ -207,7 +213,8 @@ def idle_display():
         door_animation = False
 
     if window_animation:
-        window.trigger_animation()
+        for window in windows:
+            window.trigger_animation()
         window_animation = False
 
     glutPostRedisplay()

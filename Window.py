@@ -24,16 +24,17 @@ class Window:
 
 
 
-    def __init__(self, room_x=0, room_y=0, room_z=0, room_width=1, room_height = 1, animation_speed = 4):
+    def __init__(self, room_x=0, room_y=0, room_z=0, room_width=1, room_height = 1, animation_speed = 4, displacement = 0):
         self.window_width = 8
         self.window_height = 12
         self.window_depth = 0.1
         self.board_width = 0.2
-        self.x = room_x + room_width/2
-        self.y = room_y + room_height/2
-        self.z = room_z - room_width;
         self.total_width = self.board_width * 2 + self.window_width
         self.animation_speed = animation_speed
+        self.x = room_x + room_width/2 + displacement * self.total_width
+        self.y = room_y + room_height/2
+        self.z = room_z - room_width;
+
         self.vertices = [
             [self.x - self.window_width/2 - self.board_width, self.y + self.window_height/2, self.z], #upper left
             [self.x - self.window_width/2 - self.board_width, self.y - self.window_height/2, self.z], #bottom left
