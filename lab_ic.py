@@ -9,6 +9,7 @@ from axis import Axis
 from door import Door
 from fan import Fan
 from table import Table
+from chair import Chair
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -46,6 +47,7 @@ room = Room(0, 0, 0)
 door = Door(room.x + 10, room.y, room.z, 10, 20)
 fan = Fan(0, 0, 0)
 table = Table(10, 0, 10, 30, 50, 10, 1)
+chair = Chair(10, 30, 10, 5, 5, 1)
 
 
 def mouse_movement_handler(x, y):
@@ -129,7 +131,8 @@ def display():
     room.draw()
     door.draw()
     fan.draw()
-    table.draw()
+    # table.draw()
+    chair.draw()
     # end draw code
 
     glutSwapBuffers()
