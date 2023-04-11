@@ -22,12 +22,12 @@ f_aspect = current_window_width/current_window_height
 
 view_range = 500
 
-camera_x = 20
-camera_y = 10
-camera_z = 30
+camera_x = 50
+camera_y = 25
+camera_z = -20
 camera_rot_vert = 0.0
 camera_rot_hori = 0.0
-camera_movement_velocity = 1
+camera_movement_velocity = 4
 camera_rotation_velocity = 0.4
 
 focal_point_x = 0
@@ -43,20 +43,25 @@ door_width = 10
 door_height = 20
 door_position_x = 10
 
-room_width = 50
+room_width = 70
 room_height = 40
 room_x = 20
 room_y = 0
 room_z = -10
 
 axis = Axis()
+
 room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
+
 door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
-fan1 = Fan(room_x + 40, room_y + room_height - 3, room_z - 15, 1.5)
-fan2 = Fan(room_x + 10, room_y + room_height - 3, room_z - 15, 1.5)
-fan3 = Fan(room_x + 10, room_y + room_height - 3, room_z - 35, 1.5)
-fan4 = Fan(room_x + 40, room_y + room_height - 3, room_z - 35, 1.5)
-table = Table(10, 0, 10, 30, 50, 10, 1)
+
+left_fan = Fan(room_x + room_width * 0.30,  room_y + room_height - 3, room_z - room_width * 0.65, 1.5)
+right_fan = Fan(room_x + room_width * 0.70, room_y + room_height - 3, room_z - room_width * 0.65, 1.5)
+
+left_table = Table(room_x + 4,               room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
+right_table = Table(room_x + room_width - 4, room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
+
+back_table = Table(room_x + room_width/2, room_y, room_z - room_width + 4, 8, room_width * 0.73, 6, 1)
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -138,11 +143,11 @@ def display():
     axis.draw(camera_x, camera_y, camera_z, view_range)
     room.draw()
     door.draw()
-    fan1.draw()
-    fan2.draw()
-    fan3.draw()
-    fan4.draw()
-    table.draw()
+    left_fan.draw()
+    right_fan.draw()
+    left_table.draw()
+    right_table.draw()
+    back_table.draw()
     # end draw code
 
     glutSwapBuffers()
@@ -221,10 +226,8 @@ def main():
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
 
-    glutTimerFunc(100, fan1.animation, 1)
-    glutTimerFunc(100, fan2.animation, 2)
-    glutTimerFunc(100, fan3.animation, 3)
-    glutTimerFunc(100, fan4.animation, 4)
+    glutTimerFunc(100, left_fan.animation, 1)
+    glutTimerFunc(100, right_fan.animation, 2)
 
     glutMainLoop()
 
