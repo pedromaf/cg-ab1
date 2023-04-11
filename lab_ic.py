@@ -22,13 +22,11 @@ f_aspect = current_window_width/current_window_height
 
 view_range = 500
 
-camera_x = 0
-camera_y = 0
-camera_z = 100
-
+camera_x = 20
+camera_y = 10
+camera_z = 30
 camera_rot_vert = 0.0
 camera_rot_hori = 0.0
-
 camera_movement_velocity = 1
 camera_rotation_velocity = 0.4
 
@@ -40,13 +38,25 @@ previous_mouse_x = 0
 previous_mouse_y = 0
 
 door_animation = False
+door_animation_speed = 4
+door_width = 10
+door_height = 20
+door_position_x = 10
+
+room_width = 50
+room_height = 40
+room_x = 20
+room_y = 0
+room_z = -10
 
 axis = Axis()
-room = Room(0, 0, 0)
-door = Door(room.x + 10, room.y, room.z, 10, 20)
-fan = Fan(0, 0, 0)
+room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
+door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
+fan1 = Fan(room_x + 40, room_y + room_height - 3, room_z - 15, 1.5)
+fan2 = Fan(room_x + 10, room_y + room_height - 3, room_z - 15, 1.5)
+fan3 = Fan(room_x + 10, room_y + room_height - 3, room_z - 35, 1.5)
+fan4 = Fan(room_x + 40, room_y + room_height - 3, room_z - 35, 1.5)
 table = Table(10, 0, 10, 30, 50, 10, 1)
-
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -128,7 +138,10 @@ def display():
     axis.draw(camera_x, camera_y, camera_z, view_range)
     room.draw()
     door.draw()
-    fan.draw()
+    fan1.draw()
+    fan2.draw()
+    fan3.draw()
+    fan4.draw()
     table.draw()
     # end draw code
 
@@ -191,12 +204,10 @@ def mouse_action_handler(button, state, x, y):
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         door_animation = True
 
-
 def main():
     glutInit()
 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
-
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     glutCreateWindow("Hello World")
@@ -209,7 +220,11 @@ def main():
     glutMouseFunc(mouse_action_handler)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
-    glutTimerFunc(10, fan.animation, 1)
+
+    glutTimerFunc(100, fan1.animation, 1)
+    glutTimerFunc(100, fan2.animation, 2)
+    glutTimerFunc(100, fan3.animation, 3)
+    glutTimerFunc(100, fan4.animation, 4)
 
     glutMainLoop()
 
