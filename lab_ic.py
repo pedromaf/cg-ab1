@@ -56,8 +56,8 @@ room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_he
 
 door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
 
-left_fan = Fan(room_x + room_width * 0.30,  room_y + room_height - 3, room_z - room_width * 0.65, 1.5)
-right_fan = Fan(room_x + room_width * 0.70, room_y + room_height - 3, room_z - room_width * 0.65, 1.5)
+left_fan = Fan(room_x + room_width * 0.30,  room_y + room_height - 3, room_z - room_width * 0.5, 1.5)
+right_fan = Fan(room_x + room_width * 0.70, room_y + room_height - 3, room_z - room_width * 0.5, 1.5)
 
 left_table = Table(room_x + 4,               room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
 right_table = Table(room_x + room_width - 4, room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
