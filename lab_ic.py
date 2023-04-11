@@ -7,6 +7,7 @@ from math import *
 from room import Room
 from axis import Axis
 from door import Door
+from fan import Fan
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -17,7 +18,6 @@ is_fullscreen = False
 current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
-angulo = 0.0
 
 view_range = 500
 
@@ -40,81 +40,10 @@ previous_mouse_y = 0
 
 door_animation = False
 
-room = Room(0, 0, 0)
 axis = Axis()
+room = Room(0, 0, 0)
 door = Door(room.x + 10, room.y, room.z, 10, 20)
-
-def draw_cylinder(height, radius, sides):
-    glBegin(GL_TRIANGLE_STRIP)
-    for i in range(sides + 1):
-        angle = 2 * math.pi * i / sides
-        x = radius * math.cos(angle)
-        z = radius * math.sin(angle)
-        glVertex3f(x, 0, z)
-        glVertex3f(x, height, z)
-    glEnd()
-
-    glBegin(GL_TRIANGLE_FAN)
-    glVertex3f(0, height, 0)
-    for i in range(sides + 1):
-        angle = 2 * math.pi * i / sides
-        x = radius * math.cos(angle)
-        z = radius * math.sin(angle)
-        glVertex3f(x, height, z)
-    glEnd()
-
-    glBegin(GL_TRIANGLE_FAN)
-    glVertex3f(0, 0, 0)
-    for i in range(sides + 1):
-        angle = 2 * math.pi * i / sides
-        x = radius * math.cos(angle)
-        z = radius * math.sin(angle)
-        glVertex3f(x, 0, z)
-    glEnd()
-
-def anima(value):
-    global angulo
-
-    angulo += 5.0
-
-    if (angulo > 360.0):
-        angulo = 0.0
-
-    glutPostRedisplay()
-    glutTimerFunc(10, anima, 1)
-
-def ventilador():
-    glColor3f(0.8, 0.8, 0.8)
-
-    glBegin(GL_QUADS)
-    glVertex3f(0.5, 0.0, 0.5)
-    glVertex3f(5.0, 0.0, 0.5)
-    glVertex3f(5.0, 0.0, -0.5)
-    glVertex3f(0.5, 0.0, -0.5)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(-0.5, 0.0, 0.5)
-    glVertex3f(-5.0, 0.0, 0.5)
-    glVertex3f(-5.0, 0.0, -0.5)
-    glVertex3f(-0.5, 0.0, -0.5)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(0.5, 0.0, -0.5)
-    glVertex3f(0.5, 0.0, -5.0)
-    glVertex3f(-0.5, 0.0, -5.0)
-    glVertex3f(-0.5, 0.0, -0.5)
-    glEnd()
-
-    glBegin(GL_QUADS)
-    glVertex3f(0.5, 0.0, 0.5)
-    glVertex3f(0.5, 0.0, 5.0)
-    glVertex3f(-0.5, 0.0, 5.0)
-    glVertex3f(-0.5, 0.0, 0.5)
-    glEnd()
-
-    draw_cylinder(2.0, 0.7, 360)
+fan = Fan(0, 0, 0)
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -194,16 +123,7 @@ def display():
     axis.draw(camera_x, camera_y, camera_z, view_range)
     room.draw()
     door.draw()
-    
-    # end draw code
-
-    glPushMatrix()
-
-    glRotatef(angulo, 0.0, 1.0, 0.0)
-    ventilador()
-
-    glPopMatrix()
-
+    fan.draw()
     # end draw code
 
     glutSwapBuffers()
@@ -225,7 +145,6 @@ def set_visualization():
     gluLookAt(camera_x, camera_y, camera_z,
               at[0], at[1], at[2], up[0], up[1], up[2])
 
-
 def idle_display():
     global door_animation
 
@@ -234,7 +153,6 @@ def idle_display():
         door_animation = False
     
     glutPostRedisplay()
-
 
 def screen_handler():
     global is_fullscreen
@@ -246,7 +164,6 @@ def screen_handler():
         glutFullScreen()
 
     is_fullscreen = not is_fullscreen
-
 
 def reshape(width, height):
     global current_window_width, current_window_height, f_aspect
@@ -280,10 +197,9 @@ def main():
     glutMouseFunc(mouse_action_handler)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
-    glutTimerFunc(10, anima, 1)
+    glutTimerFunc(10, fan.animation, 1)
 
     glutMainLoop()
-
 
 if __name__ == "__main__":
     main()
