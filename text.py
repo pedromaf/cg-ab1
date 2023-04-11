@@ -9,9 +9,10 @@ def draw_text(text, position, window_width, window_height):
     size = font.getsize(text)
     image = Image.new('RGBA', size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
-    draw.text((0, 0), text, font=font, fill=(255, 255, 255, 0))
+    draw.text((0, 0), text, font=font, fill=(255, 255, 255, 255))
     texture_data = image.tobytes('raw', 'RGBA')
     texture_id = glGenTextures(1)
+    del image
 
     glColor3f(1, 1, 1)
     
@@ -20,8 +21,11 @@ def draw_text(text, position, window_width, window_height):
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size[0], size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size[0], size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data)
     
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
     glEnable(GL_TEXTURE_2D)
     glMatrixMode(GL_PROJECTION)
     
@@ -58,3 +62,5 @@ def draw_text(text, position, window_width, window_height):
     glMatrixMode(GL_PROJECTION)
     
     glPopMatrix()
+
+    glDeleteTextures(texture_id)

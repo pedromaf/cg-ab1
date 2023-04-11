@@ -112,6 +112,12 @@ def display():
 
     board.draw()
 
+    draw_text(f"[W, A, S, D] Navigate", [0, current_window_height], current_window_width, current_window_height)
+    draw_text(f"[N] Decrease speed", [0, current_window_height - 25], current_window_width, current_window_height)
+    draw_text(f"[M] Increase speed", [0, current_window_height - 50], current_window_width, current_window_height)
+    draw_text(f"[O] Fullscreen", [0, current_window_height - 75], current_window_width, current_window_height)
+    draw_text(f"[X] Show axis", [0, current_window_height - 100], current_window_width, current_window_height)
+    
     draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25], current_window_width, current_window_height)
     # end draw code
 
@@ -243,7 +249,7 @@ def mouse_action_handler(button, state, mouse_x, mouse_y):
 def main():
     glutInit()
 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH)
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     glutCreateWindow("Hello World")
