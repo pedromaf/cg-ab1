@@ -14,7 +14,8 @@ class Door:
         self.door_animation_speed = door_animation_speed
     
     def __draw_object(self):
-        glColor3f(0.5, 0.3, 0.8)
+        glColor3f(0.7, 0.7, 0.7)
+
         glBegin(GL_QUADS)
         glVertex3f(self.x,              self.y, self.z)
         glVertex3f(self.x + self.width, self.y, self.z)
@@ -42,10 +43,13 @@ class Door:
 
     def __rotate(self):
         glPushMatrix()
+        
         glTranslate(self.x, self.y, self.z)
         glRotatef(self.door_rotation_angle, 0, 1, 0)
         glTranslate(-self.x, -self.y, -self.z)
+
         self.__draw_object()
+
         glPopMatrix()
     
     def trigger_animation(self):

@@ -21,13 +21,11 @@ f_aspect = current_window_width/current_window_height
 
 view_range = 500
 
-camera_x = 0
-camera_y = 0
-camera_z = 100
-
+camera_x = 20
+camera_y = 10
+camera_z = 30
 camera_rot_vert = 0.0
 camera_rot_hori = 0.0
-
 camera_movement_velocity = 1
 camera_rotation_velocity = 0.4
 
@@ -200,7 +198,6 @@ def main():
     glutInit()
 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
-
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     glutCreateWindow("Hello World")
@@ -213,6 +210,7 @@ def main():
     glutMouseFunc(mouse_action_handler)
     glutIdleFunc(idle_display)
     glutReshapeFunc(reshape)
+
     glutTimerFunc(100, fan1.animation, 1)
     glutTimerFunc(100, fan2.animation, 2)
     glutTimerFunc(100, fan3.animation, 3)

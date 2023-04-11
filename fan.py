@@ -12,10 +12,13 @@ class Fan:
     
     def draw(self):
         glPushMatrix()
+
         glTranslate(self.x, self.y, self.z)
         glScale(self.size, self.size, self.size)
         glRotatef(self.rotation_angle, 0.0, 1.0, 0.0)
+
         self.__draw_object()
+        
         glPopMatrix()
     
     def __draw_cylinder(self, height, radius, sides):
