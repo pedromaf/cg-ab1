@@ -21,7 +21,6 @@ class Room:
         glVertex3f(self.x + self.door_position_x, self.y,               self.z)
         glEnd()
 
-        glColor3f(1, 1, 0)
         glBegin(GL_QUADS)
         glVertex3f(self.x + self.door_position_x,                   self.y + self.door_height, self.z)
         glVertex3f(self.x + self.door_position_x,                   self.y + self.height,      self.z)
@@ -29,7 +28,6 @@ class Room:
         glVertex3f(self.x + self.door_position_x + self.door_width, self.y + self.door_height, self.z)
         glEnd()
 
-        glColor3f(1, 1, 1)
         glBegin(GL_QUADS)
         glVertex3f(self.x + self.door_position_x + self.door_width, self.y + self.height, self.z)
         glVertex3f(self.x + self.door_position_x + self.door_width, self.y,               self.z)

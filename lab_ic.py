@@ -42,7 +42,7 @@ door_animation = False
 door_animation_speed = 4
 door_width = 10
 door_height = 20
-door_position_x = 40
+door_position_x = 10
 
 room_width = 50
 room_height = 40
@@ -53,8 +53,10 @@ room_z = -10
 axis = Axis()
 room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x)
 door = Door(room_x + door_position_x, room_y, room_z, door_width, door_height, door_animation_speed)
-fan1 = Fan(0, 0, 0)
-fan2 = Fan(10, 0, 0)
+fan1 = Fan(room_x + 40, room_y + room_height - 3, room_z - 15, 1.5)
+fan2 = Fan(room_x + 10, room_y + room_height - 3, room_z - 15, 1.5)
+fan3 = Fan(room_x + 10, room_y + room_height - 3, room_z - 35, 1.5)
+fan4 = Fan(room_x + 40, room_y + room_height - 3, room_z - 35, 1.5)
 
 def mouse_movement_handler(x, y):
     global previous_mouse_x, previous_mouse_y, camera_rot_hori, camera_rot_vert
@@ -136,6 +138,8 @@ def display():
     door.draw()
     fan1.draw()
     fan2.draw()
+    fan3.draw()
+    fan4.draw()
     # end draw code
 
     glutSwapBuffers()
@@ -211,6 +215,8 @@ def main():
     glutReshapeFunc(reshape)
     glutTimerFunc(100, fan1.animation, 1)
     glutTimerFunc(100, fan2.animation, 2)
+    glutTimerFunc(100, fan3.animation, 3)
+    glutTimerFunc(100, fan4.animation, 4)
 
     glutMainLoop()
 

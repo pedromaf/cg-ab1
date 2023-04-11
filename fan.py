@@ -3,14 +3,17 @@ from OpenGL.GLUT import *
 from math import *
 
 class Fan:
-    def __init__(self, x, y, z):
+    def __init__(self, x, y, z, size):
         self.x = x
         self.y = y
         self.z = z
         self.rotation_angle = 0.0
+        self.size = size
     
     def draw(self):
         glPushMatrix()
+        glTranslate(self.x, self.y, self.z)
+        glScale(self.size, self.size, self.size)
         glRotatef(self.rotation_angle, 0.0, 1.0, 0.0)
         self.__draw_object()
         glPopMatrix()
