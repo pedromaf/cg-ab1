@@ -275,7 +275,7 @@ def main():
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH)
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
-    glutCreateWindow("Hello World")
+    glutCreateWindow("Laboratorio de Controle")
 
     glutSetCursor(GLUT_CURSOR_NONE)
 
