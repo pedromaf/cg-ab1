@@ -46,7 +46,7 @@ class Room:
             [self.window.x -hole_width/2 , self.window.y + hole_height/2, self.window.y], #upper left
             [self.window.x -hole_width/2 , self.window.y - hole_height/2, self.window.y], #bottom left
             [self.window.x +hole_width/2 , self.window.y - hole_height/2, self.window.y], #bottom right
-            [self.window.x +hole_width/2 , self.window.y + hole_height/2, self.window.y] #upper right
+            [self.window.x +hole_width/2 , self.window.y + hole_height/2, self.window.y]  #upper right
         ]
 
         glBegin(GL_QUADS)
@@ -78,7 +78,6 @@ class Room:
         glVertex3f(self.x + self.width, self.y, self.z - self.width)
         glVertex3f(self.x + self.width, self.y + self.height, self.z - self.width)
         glEnd()
-
 
     def draw_room_left_wall(self):
         glBegin(GL_QUADS)
@@ -123,7 +122,7 @@ class Room:
         self.draw_room_left_wall()
         self.draw_room_right_wall()
 
-        glColor3f(0.1, 0.1, 0.1)
+        glColor3f(0.6, 0.6, 0.6)
         
         self.draw_room_floor()
 

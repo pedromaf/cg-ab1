@@ -23,15 +23,15 @@ current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
 
-view_range = 500
+view_range = 2000
 
 camera_x = 50
 camera_y = 25
 camera_z = 50
 camera_rot_vert = 0.0
 camera_rot_hori = 0.0
-camera_movement_velocity = 4
-camera_rotation_velocity = 0.4
+camera_movement_velocity = 5
+camera_rotation_velocity = 0.5
 
 focal_point_x = 0
 focal_point_y = 0
@@ -41,7 +41,7 @@ previous_mouse_x = 0
 previous_mouse_y = 0
 
 door_animation = False
-door_animation_speed = 4
+door_animation_speed = 10
 door_width = 10
 door_height = 20
 door_position_x = 10
