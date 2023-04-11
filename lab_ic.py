@@ -10,6 +10,7 @@ from door import Door
 from fan import Fan
 from table import Table
 from chair import Chair
+from board import Board
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -61,6 +62,7 @@ fan3 = Fan(room_x + 10, room_y + room_height - 3, room_z - 35, 1.5)
 fan4 = Fan(room_x + 40, room_y + room_height - 3, room_z - 35, 1.5)
 table = Table(10, 0, 10, 30, 50, 10, 1)
 chair = Chair(10, 30, 10, 5, 5, 1)
+board = Board(0, 0, 0, 13, 20, 0.3, 1)
 
 
 def mouse_movement_handler(x, y):
@@ -145,6 +147,7 @@ def display():
     door.draw()
     # table.draw()
     chair.draw()
+    board.draw()
     # end draw code
 
     glutSwapBuffers()
