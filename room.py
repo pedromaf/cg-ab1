@@ -1,6 +1,6 @@
 from OpenGL.GL import *
 
-from Window import Window
+from window import Window
 
 class Room:
     def __init__ (self, x, y, z, width, height, door_width, door_height, door_position_x, window:Window, num_of_windows):

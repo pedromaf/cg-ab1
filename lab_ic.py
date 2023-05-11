@@ -11,7 +11,8 @@ from fan import Fan
 from table import Table
 from chair import Chair
 from board import Board
-from Window import Window
+from window import Window
+from ground import Ground
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -23,7 +24,7 @@ current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
 
-view_range = 2000
+view_range = 500
 
 camera_x = 50
 camera_y = 25
@@ -49,7 +50,7 @@ door_position_x = 10
 room_width = 70
 room_height = 40
 room_x = 20
-room_y = 0
+room_y = 0.1
 room_z = -10
 
 door_animation_speed = 10
@@ -65,6 +66,8 @@ for i in range(-number_of_windows+1, 1):
 axis_enabled = True
 
 axis = Axis()
+
+ground = Ground(camera_x, camera_z, view_range)
 
 room = Room(room_x, room_y, room_z, room_width, room_height, door_width, door_height, door_position_x, windows[center_window], number_of_windows)
 
@@ -98,6 +101,8 @@ def display():
     glEnableClientState(GL_VERTEX_ARRAY)
 
     set_visualization()
+
+    ground.draw()
 
     # begin draw code
     if axis_enabled:
