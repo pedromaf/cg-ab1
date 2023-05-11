@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from math import *
+from texture_handler import load_texture
 
 
 class Board:
@@ -13,6 +14,7 @@ class Board:
         self.depth = depth
         self.size = size
         self.rotation_angle = rotation_angle
+        self.content_texture_id = None
 
     def draw(self):
         glPushMatrix()
@@ -23,6 +25,11 @@ class Board:
         glPopMatrix()
 
     def __mainBoard(self):
+        
+        if self.content_texture_id == None:
+            self.content_texture_id = load_texture("textures/board_content.jpg")
+
+        glColor3f(0.8, 0.8, 0.8)     
 
         # frente
         glBegin(GL_QUADS)
@@ -32,13 +39,22 @@ class Board:
         glVertex3f(self.width/2, -self.height/2,  -self.depth/2)
         glEnd()
 
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.content_texture_id)
+
         # costas
         glBegin(GL_QUADS)
+        glTexCoord2f(1, 1)
         glVertex3f(-self.width/2, -self.height/2,  self.depth/2)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height/2,  self.depth/2)
+        glTexCoord2f(0, 0)
         glVertex3f(self.width/2, self.height/2,  self.depth/2)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, -self.height/2,  self.depth/2)
         glEnd()
+
+        glDisable(GL_TEXTURE_2D)
 
         glColor3f(0.6, 0.6, 0.6)
 
@@ -175,7 +191,6 @@ class Board:
         glEnd()
 
     def __draw_object(self):
-        glColor3f(0.8, 0.8, 0.8)
 
         self.__mainBoard()
         glPushMatrix()

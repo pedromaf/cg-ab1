@@ -24,7 +24,7 @@ current_window_width = WINDOW_WIDTH
 current_window_height = WINDOW_HEIGHT
 f_aspect = current_window_width/current_window_height
 
-view_range = 500
+view_range = 1000
 
 camera_x = 50
 camera_y = 25
