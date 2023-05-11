@@ -6,7 +6,7 @@ class Ground:
     def __init__(self, camera_x, camera_z, view_range):
         self.camera_x = camera_x
         self.camera_z = camera_z
-        self.view_range = view_range
+        self.view_range = view_range * 1.5
     
     def draw(self):
         glColor3f(0.3, 0.5, 0.3)
