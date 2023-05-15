@@ -53,6 +53,12 @@ room_x = 20
 room_y = 0.1
 room_z = -10
 
+axis_enabled = True
+
+light_on = True
+day_light = True
+ambient_light = [0.7, 0.7, 0.7, 1.0]
+
 door_animation_speed = 10
 window_animation_speed = 10
 
@@ -60,13 +66,9 @@ window_animation = False
 number_of_windows = 3
 center_window = int(number_of_windows/2)
 windows = []
+
 for i in range(-number_of_windows+1, 1):
     windows.append(Window(room_x, room_y, room_z, room_width, room_height, window_animation_speed, i))
-
-axis_enabled = True
-
-light_on = True
-day_light = True
 
 axis = Axis()
 
@@ -95,13 +97,17 @@ board = Board(room_x + 45, room_y + 15, room_z - 0.4, 15, 25, 0.3, 1, 180)
 def display():
     global room, axis, door
     global camera_movement_velocity, current_window_width, current_window_height
-    global day_light
+    global day_light, ambient_light
 
     if day_light:
+        ambient_light = [0.7, 0.7, 0.7, 1.0]
         glClearColor(0.5, 0.8, 1, 1)
     else:
+        ambient_light = [0.2, 0.2, 0.2, 1.0]
         glClearColor(0.08, 0.08, 0.2, 1)
          
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light)
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     glEnable(GL_DEPTH_TEST)
@@ -291,6 +297,10 @@ def mouse_action_handler(button, state, mouse_x, mouse_y):
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         door_animation = True
 
+def init_light():
+    glEnable(GL_LIGHTING)
+    glEnable(GL_COLOR_MATERIAL)
+
 def main():
     glutInit()
 
@@ -301,6 +311,8 @@ def main():
 
     glutSetCursor(GLUT_CURSOR_NONE)
     glEnable(GL_DEPTH_TEST)
+
+    init_light()
 
     glutDisplayFunc(display)
     glutKeyboardFunc(keyboard_handler)
