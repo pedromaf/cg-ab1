@@ -103,13 +103,13 @@ def display():
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    lighting()
-
     set_visualization()
 
-    ground.draw()
+    lighting()
 
     # begin draw code
+    ground.draw()
+
     if axis_enabled:
         axis.draw(camera_x, camera_y, camera_z, view_range)
 
@@ -126,17 +126,16 @@ def display():
     for window in windows:
         window.draw()
     
-
     right_chair.draw()
     left_chair.draw()
 
     back_chair1.draw()
     back_chair2.draw()
     back_chair3.draw()
-    
+
     left_fan.draw()
     right_fan.draw()
-    
+
     ceiling_lamp.draw()
 
     draw_text(f"[Mouse Left] Control door", [0, current_window_height], current_window_width, current_window_height)
@@ -229,8 +228,10 @@ def keyboard_handler(key, mouse_x, mouse_y):
     elif key == b'l' or key == b'L':
         if room_light_on:
             glDisable(GL_LIGHT0)
+            glDisable(GL_LIGHT1)
         else:
             glEnable(GL_LIGHT0)
+            glEnable(GL_LIGHT1)
         room_light_on = not room_light_on
     elif key == b'k' or key == b'K':
         day_light_on = not day_light_on
@@ -294,12 +295,13 @@ def mouse_action_handler(button, state, mouse_x, mouse_y):
 
 def lighting():
     global day_light_on, ambient_light_value
+    global camera_x, camera_y, camera_z
 
-    luzEspecular = [1.0,1.0,1.0,1.0]
+    luzEspecular = [0.3, 0.3, 0.3, 0]
     luzDifusa=[1, 1, 1, 1.0]
-    especularidade = [1.0, 1.0, 1.0, 1.0]
     posicaoLuz = [55.0, 39, -45.0, 0.0]
-    especMaterial = GLint(60)
+    material_specular = (0.2, 0.2, 0.2, 0.5)
+    material_shininess = 36.0  
 
     if day_light_on:
         ambient_light_value = [0.7, 0.7, 0.7, 1.0]
@@ -309,19 +311,23 @@ def lighting():
         glClearColor(0.08, 0.08, 0.2, 1)
     
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light_value)
-    
-    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0)
-    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.1)
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01)
 
     glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, 180)
     glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz)
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, [55.0, 0.0, -45.0])
     glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa)
 
+    glLightfv(GL_LIGHT1, GL_POSITION, [camera_x, camera_y, camera_z])
+    glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular)
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, luzEspecular)
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_specular)
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material_shininess)
+
 def init_light():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
+    glEnable(GL_LIGHT1)
     glShadeModel(GL_SMOOTH)
     glEnable(GL_COLOR_MATERIAL)
     glEnable(GL_NORMALIZE)

@@ -64,8 +64,6 @@ class Window:
         glVertex3f(*vertices[3])
 
         glEnd()
-
-
     
     def __drawVerticalBoardPieces(self):
 
@@ -78,8 +76,6 @@ class Window:
         glTranslate(self.window_width/2,0, 0)
         self.draw_cube(self.vertices)
         glPopMatrix()
-
-
 
     def __drawHorizontalBoardPieces(self):
         
@@ -109,8 +105,6 @@ class Window:
         self.draw_cube(self.vertices)
         glPopMatrix()
     
-
-   
     def draw(self):
         if (self.is_opening and self.rotation_angle >= 90):
             self.is_opening = False
@@ -129,21 +123,9 @@ class Window:
         else:
             self.__draw_closed__window()
 
-
     def __draw_closed__window(self):
         self.__drawVerticalBoardPieces()
         self.__drawHorizontalBoardPieces()
-
-     
-    # def open(self):
-    #     glPushMatrix()  # salva a matriz de modelo atual
-    #     glTranslate(self.x, self.y, self.z)  # move o objeto para o centro de sua posição
-    #     glRotate(90, 0, 1, 0)  # rotaciona o objeto em torno do eixo y
-    #     glTranslate(-self.x, -self.y, -self.z)
-    #     self.__drawVerticalBoardPieces()
-    #     self.__drawHorizontalBoardPieces()  # move o objeto de volta à sua posição original
-    #     glPopMatrix()  # restaura a matriz de modelo original
-
 
     def __rotate(self):
         glPushMatrix()
@@ -152,7 +134,6 @@ class Window:
         glTranslate(-self.x, -self.y, -self.z)
         self.__draw_closed__window()
         glPopMatrix()
-
 
     def trigger_animation(self):
         if self.is_open or self.is_opening:

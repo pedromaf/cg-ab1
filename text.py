@@ -11,7 +11,7 @@ def draw_text(text, position, window_width, window_height):
     size = font.getsize(text)
     image = Image.new('RGBA', size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
-    draw.text((0, 0), text, font=font, fill=(255, 255, 255, 255))
+    draw.text((0, 0), text, font=font, fill=(0, 0, 0, 255))
     texture_data = image.tobytes('raw', 'RGBA')
     texture_id = glGenTextures(1)
     del image
