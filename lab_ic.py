@@ -13,6 +13,7 @@ from chair import Chair
 from board import Board
 from window import Window
 from ground import Ground
+from ceiling_lamp import CeilingLamp
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -55,9 +56,9 @@ room_z = -10
 
 axis_enabled = True
 
-light_on = True
-day_light = True
-ambient_light = [0.7, 0.7, 0.7, 1.0]
+room_light_on = True
+day_light_on = True
+ambient_light_value = [0.7, 0.7, 0.7, 1.0]
 
 door_animation_speed = 10
 window_animation_speed = 10
@@ -94,24 +95,15 @@ back_chair3 = Chair(room_x + room_width/2, room_y, room_z - room_width + 15, 5, 
 
 board = Board(room_x + 45, room_y + 15, room_z - 0.4, 15, 25, 0.3, 1, 180)
 
+ceiling_lamp = CeilingLamp(room_x, room_y, room_z, room_height, room_width)
+
 def display():
     global room, axis, door
     global camera_movement_velocity, current_window_width, current_window_height
-    global day_light, ambient_light
-
-    if day_light:
-        ambient_light = [0.7, 0.7, 0.7, 1.0]
-        glClearColor(0.5, 0.8, 1, 1)
-    else:
-        ambient_light = [0.2, 0.2, 0.2, 1.0]
-        glClearColor(0.08, 0.08, 0.2, 1)
-         
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light)
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    glEnable(GL_DEPTH_TEST)
-    glEnableClientState(GL_VERTEX_ARRAY)
+    lighting()
 
     set_visualization()
 
@@ -134,8 +126,6 @@ def display():
     for window in windows:
         window.draw()
     
-    left_fan.draw()
-    right_fan.draw()
 
     right_chair.draw()
     left_chair.draw()
@@ -143,6 +133,11 @@ def display():
     back_chair1.draw()
     back_chair2.draw()
     back_chair3.draw()
+    
+    left_fan.draw()
+    right_fan.draw()
+    
+    ceiling_lamp.draw()
 
     draw_text(f"[Mouse Left] Control door", [0, current_window_height], current_window_width, current_window_height)
     draw_text(f"[W, A, S, D] Navigate", [0, current_window_height - 25], current_window_width, current_window_height)
@@ -193,7 +188,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
-    global room, door_animation, axis_enabled, window_animation, light_on, day_light
+    global room, door_animation, axis_enabled, window_animation, room_light_on, day_light_on
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -232,13 +227,13 @@ def keyboard_handler(key, mouse_x, mouse_y):
     elif key == b'x' or key == b'X':
         axis_enabled = not axis_enabled
     elif key == b'l' or key == b'L':
-        if light_on:
+        if room_light_on:
             glDisable(GL_LIGHT0)
         else:
             glEnable(GL_LIGHT0)
-        light_on = not light_on
+        room_light_on = not room_light_on
     elif key == b'k' or key == b'K':
-        day_light = not day_light
+        day_light_on = not day_light_on
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -297,9 +292,39 @@ def mouse_action_handler(button, state, mouse_x, mouse_y):
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         door_animation = True
 
+def lighting():
+    global day_light_on, ambient_light_value
+
+    luzEspecular = [1.0,1.0,1.0,1.0]
+    luzDifusa=[1, 1, 1, 1.0]
+    especularidade = [1.0, 1.0, 1.0, 1.0]
+    posicaoLuz = [55.0, 39, -45.0, 0.0]
+    especMaterial = GLint(60)
+
+    if day_light_on:
+        ambient_light_value = [0.7, 0.7, 0.7, 1.0]
+        glClearColor(0.5, 0.8, 1, 1)
+    else:
+        ambient_light_value = [0.2, 0.2, 0.2, 1.0]
+        glClearColor(0.08, 0.08, 0.2, 1)
+    
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light_value)
+    
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0)
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.1)
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01)
+
+    glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, 180)
+    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz)
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, [55.0, 0.0, -45.0])
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa)
+
 def init_light():
     glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glShadeModel(GL_SMOOTH)
     glEnable(GL_COLOR_MATERIAL)
+    glEnable(GL_NORMALIZE)
 
 def main():
     glutInit()
@@ -309,10 +334,11 @@ def main():
     glutInitWindowPosition(WINDOW_POSITION_X, WINDOW_POSITION_Y)
     glutCreateWindow("Laboratorio de Controle")
 
+    init_light()
+
     glutSetCursor(GLUT_CURSOR_NONE)
     glEnable(GL_DEPTH_TEST)
-
-    init_light()
+    glEnableClientState(GL_VERTEX_ARRAY)
 
     glutDisplayFunc(display)
     glutKeyboardFunc(keyboard_handler)

@@ -20,6 +20,15 @@ class Fan:
         self.__draw_object()
         
         glPopMatrix()
+
+        glPushMatrix()
+        glTranslate(self.x, self.y, self.z)
+        glScale(self.size, self.size, self.size)
+        
+        glColor3f(0.4, 0.4, 0.4)
+        self.__draw_cylinder(2.0, 0.7, 360)
+
+        glPopMatrix()
     
     def __draw_cylinder(self, height, radius, sides):
         glBegin(GL_TRIANGLE_STRIP)
@@ -37,7 +46,7 @@ class Fan:
             angle = 2 * pi * i / sides
             x = radius * cos(angle)
             z = radius * sin(angle)
-            glVertex3f(x, 0, z)
+            glVertex3f(x, -0.1, z)
         glEnd()
 
     def animation(self, value):
@@ -50,7 +59,7 @@ class Fan:
         glutTimerFunc(10, self.animation, value)
 
     def __draw_object(self):
-        glColor3f(0.4, 0.4, 0.4)
+        glColor3f(0, 0, 0)
 
         glBegin(GL_QUADS)
         glVertex3f(0.5, 0.0, 0.5)
@@ -80,4 +89,4 @@ class Fan:
         glVertex3f(-0.5, 0.0, 0.5)
         glEnd()
 
-        self.__draw_cylinder(2.0, 0.7, 360)
+        

@@ -5,6 +5,8 @@ from OpenGL.GLUT import *
 from PIL import Image, ImageDraw, ImageFont
 
 def draw_text(text, position, window_width, window_height):
+    glDisable(GL_LIGHTING)
+    glDisable(GL_COLOR_MATERIAL)
     font = ImageFont.truetype('arial.ttf', 24)
     size = font.getsize(text)
     image = Image.new('RGBA', size, (0, 0, 0, 0))
@@ -64,3 +66,5 @@ def draw_text(text, position, window_width, window_height):
     glPopMatrix()
 
     glDeleteTextures(texture_id)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_COLOR_MATERIAL)

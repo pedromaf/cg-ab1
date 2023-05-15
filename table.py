@@ -152,6 +152,8 @@ class Table:
         glVertex3f(0.3, self.height, -0.3)
         glEnd()
 
+        glDisable(GL_TEXTURE_2D)
+
     def __draw_object(self):
         
         glPushMatrix()

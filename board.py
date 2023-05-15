@@ -42,12 +42,16 @@ class Board:
         # costas
         glBegin(GL_QUADS)
         glTexCoord2f(1, 1)
+        glNormal3f(-self.width/2, self.height/2, -self.depth/2)
         glVertex3f(-self.width/2, -self.height/2,  self.depth/2)
         glTexCoord2f(1, 0)
+        glNormal3f(-self.width/2, self.height/2, -self.depth/2)
         glVertex3f(-self.width/2, self.height/2,  self.depth/2)
         glTexCoord2f(0, 0)
+        glNormal3f(-self.width/2, self.height/2, -self.depth/2)
         glVertex3f(self.width/2, self.height/2,  self.depth/2)
         glTexCoord2f(0, 1)
+        glNormal3f(-self.width/2, self.height/2, -self.depth/2)
         glVertex3f(self.width/2, -self.height/2,  self.depth/2)
         glEnd()
 
