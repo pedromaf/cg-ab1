@@ -50,7 +50,7 @@ class Fan:
         glutTimerFunc(10, self.animation, value)
 
     def __draw_object(self):
-        glColor3f(0.8, 0.8, 0.8)
+        glColor3f(0.4, 0.4, 0.4)
 
         glBegin(GL_QUADS)
         glVertex3f(0.5, 0.0, 0.5)

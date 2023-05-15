@@ -147,6 +147,8 @@ class Room:
         glEnd()
 
     def draw_room_floor(self):
+        glColor3f(0.5, 0.5, 0.5)
+
         glBegin(GL_QUADS)
         glTexCoord2f(0, 0)
         glVertex3f(self.x,              self.y, self.z)
