@@ -98,6 +98,8 @@ class Board:
         glVertex3f(self.width * 0.1, 0.0,  -self.width * 0.05)
         glEnd()
 
+        glDisable(GL_TEXTURE_2D)
+
     def __edgeBottomUp(self, percent):
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.border_texture_id)

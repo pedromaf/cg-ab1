@@ -117,17 +117,19 @@ def display():
 
     room.draw()
 
-    for window in windows:
-        window.draw()
-
-    door.draw()
-
-    left_fan.draw()
-    right_fan.draw()
-
     left_table.draw()
     right_table.draw()
     back_table.draw()
+
+    door.draw()
+    
+    board.draw()
+    
+    for window in windows:
+        window.draw()
+    
+    left_fan.draw()
+    right_fan.draw()
 
     right_chair.draw()
     left_chair.draw()
@@ -135,8 +137,6 @@ def display():
     back_chair1.draw()
     back_chair2.draw()
     back_chair3.draw()
-
-    board.draw()
 
     draw_text(f"[Mouse Left] Control door", [0, current_window_height], current_window_width, current_window_height)
     draw_text(f"[W, A, S, D] Navigate", [0, current_window_height - 25], current_window_width, current_window_height)
