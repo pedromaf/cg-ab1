@@ -2,6 +2,8 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from math import *
 
+from texture_handler import load_texture
+
 
 class Table:
     def __init__(self, x, y, z, height, width, depth, size):
@@ -12,8 +14,16 @@ class Table:
         self.width = width
         self.depth = depth
         self.size = size
+        self.table_texture_id = None
+        self.table_foot_texture_id = None
 
     def draw(self):
+        if self.table_texture_id == None:
+            self.table_texture_id = load_texture("textures/table.jpg")
+            
+        if self.table_foot_texture_id == None:
+            self.table_foot_texture_id = load_texture("textures/aluminium.jpg")
+
         glPushMatrix()
         glScalef(self.size, self.size, self.size)
         glTranslatef(self.x, self.y, self.z)
@@ -22,83 +32,128 @@ class Table:
 
     def __tampo(self):
         # tampo
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.table_texture_id)
+
         glBegin(GL_QUADS)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height, -self.depth/2)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, self.height, -self.depth/2)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height, self.depth/2)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, self.height, self.depth/2)
         glEnd()
 
         # tampo de baixo
         glBegin(GL_QUADS)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height * 0.95, -self.depth/2)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, self.height * 0.95, -self.depth/2)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height * 0.95, self.depth/2)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, self.height * 0.95, self.depth/2)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, self.height * 0.95, -self.depth/2)
+        glTexCoord2f(1, 0)
         glVertex3f(self.width/2, self.height * 0.95, -self.depth/2)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height, -self.depth/2)
+        glTexCoord2f(0, 1)
         glVertex3f(-self.width/2, self.height, -self.depth/2)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, self.height * 0.95, self.depth/2)
+        glTexCoord2f(1, 0)
         glVertex3f(self.width/2, self.height * 0.95, self.depth/2)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height, self.depth/2)
+        glTexCoord2f(0, 1)
         glVertex3f(-self.width/2, self.height, self.depth/2)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, self.height * 0.95, -self.depth/2)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height * 0.95, self.depth/2)
+        glTexCoord2f(1, 1)
         glVertex3f(-self.width/2, self.height, self.depth/2)
+        glTexCoord2f(0, 1)
         glVertex3f(-self.width/2, self.height, -self.depth/2)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(self.width/2, self.height * 0.95, -self.depth/2)
+        glTexCoord2f(1, 0)
         glVertex3f(self.width/2, self.height * 0.95, self.depth/2)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height, self.depth/2)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, self.height, -self.depth/2)
         glEnd()
+
+        glDisable(GL_TEXTURE_2D)
 
     def __perna(self):
-        glColor3f(0.4, 0.20, 0.0)
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.table_foot_texture_id)
 
         glBegin(GL_QUADS)
+        glTexCoord2f(1, 0)
         glVertex3f(-0.3, 0.0, -0.3)
+        glTexCoord2f(0, 0) 
         glVertex3f(0.3, 0.0, -0.3)
+        glTexCoord2f(0, 1)
         glVertex3f(0.3, self.height, -0.3)
+        glTexCoord2f(1, 1)
         glVertex3f(-0.3, self.height, -0.3)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(1, 0)
         glVertex3f(-0.3, 0.0, 0.3)
+        glTexCoord2f(0, 0)
         glVertex3f(0.3, 0.0, 0.3)
+        glTexCoord2f(0, 1)
         glVertex3f(0.3, self.height, 0.3)
+        glTexCoord2f(1, 1)
         glVertex3f(-0.3, self.height, 0.3)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(1, 0)
         glVertex3f(-0.3, 0.0, -0.3)
+        glTexCoord2f(0, 0)
         glVertex3f(-0.3, 0.0, 0.3)
+        glTexCoord2f(0, 1)
         glVertex3f(-0.3, self.height, 0.3)
+        glTexCoord2f(1, 1)
         glVertex3f(-0.3, self.height, -0.3)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(1, 0)
         glVertex3f(0.3, 0.0, -0.3)
+        glTexCoord2f(0, 0)
         glVertex3f(0.3, 0.0, 0.3)
+        glTexCoord2f(0, 1)
         glVertex3f(0.3, self.height, 0.3)
+        glTexCoord2f(1, 1)
         glVertex3f(0.3, self.height, -0.3)
         glEnd()
 
     def __draw_object(self):
-        glColor3f(0.5, 0.25, 0.0)
-
+        
         glPushMatrix()
         glScalef(1.1, 1, 1.1)
         self.__tampo()

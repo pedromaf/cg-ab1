@@ -16,6 +16,8 @@ class Ground:
         if self.texture_id == None:
             self.texture_id = load_texture("textures/ground.jpg")
 
+        glColor3f(0.3, 0.3, 0.3)
+
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texture_id)
 

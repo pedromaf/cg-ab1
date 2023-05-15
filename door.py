@@ -2,6 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
+from texture_handler import load_texture
 
 class Door:
     def __init__(self, x, y, z, width, height, door_animation_speed):
@@ -15,26 +16,41 @@ class Door:
         self.door_is_closing = False
         self.door_open = False
         self.door_animation_speed = door_animation_speed
+        self.door_texture_id = None
 
     def __draw_object(self):
 
         depth = 0.5
 
-        glColor3f(0.7, 0.7, 0.7)
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.door_texture_id)
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(self.x,              self.y, self.z)
+        glTexCoord2f(1, 0)
         glVertex3f(self.x + self.width, self.y, self.z)
+        glTexCoord2f(1, 1)
         glVertex3f(self.x + self.width, self.y + self.height, self.z)
+        glTexCoord2f(0, 1)
         glVertex3f(self.x,              self.y + self.height, self.z)
         glEnd()
 
+
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(self.x,              self.y, self.z - depth)
+        glTexCoord2f(1, 0)
         glVertex3f(self.x + self.width, self.y, self.z - depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.x + self.width, self.y + self.height, self.z - depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.x,              self.y + self.height, self.z - depth)
         glEnd()
+
+        glDisable(GL_TEXTURE_2D)
+
+        glColor3f(0.4, 0.4, 0.4)
 
         glBegin(GL_QUADS)
         glVertex3f(self.x, self.y, self.z)
@@ -59,22 +75,7 @@ class Door:
 
         # maçaneta
         glColor3f(0.5, 0.5, 0.5)
-        scale = 0.15
         radius = 0.5
-
-        glPushMatrix()
-        glTranslatef(self.width * 0.8, self.height * 0.4, 0.0)
-
-        glBegin(GL_QUADS)
-        glVertex3f(self.x,              self.y, self.z - depth - 0.01)
-        glVertex3f((self.x + self.width * scale),
-                   self.y, self.z - depth - 0.01)
-        glVertex3f((self.x + self.width * scale), self.y +
-                   self.height * scale, self.z - depth - 0.01)
-        glVertex3f(self.x,              self.y +
-                   self.height * scale, self.z - depth - 0.01)
-        glEnd()
-        glPopMatrix()
 
         glColor3f(0.35, 0.35, 0.35)
         glPushMatrix()
@@ -82,8 +83,17 @@ class Door:
                      self.height * 0.48, self.z - depth - radius)
         glutSolidSphere(radius, 25, 25)
         glPopMatrix()
+        
+        glPushMatrix()
+        glTranslatef(self.x + self.width * 0.9, self.y +
+                     self.height * 0.48, self.z + depth)
+        glutSolidSphere(radius, 25, 25)
+        glPopMatrix()
 
     def draw(self):
+        if self.door_texture_id == None:
+            self.door_texture_id = load_texture("textures/door.jpg")
+
         if (self.door_is_opening and self.door_rotation_angle >= 90):
             self.door_is_opening = False
             self.door_open = True

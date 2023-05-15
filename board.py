@@ -15,6 +15,7 @@ class Board:
         self.size = size
         self.rotation_angle = rotation_angle
         self.content_texture_id = None
+        self.border_texture_id = None
 
     def draw(self):
         glPushMatrix()
@@ -25,10 +26,6 @@ class Board:
         glPopMatrix()
 
     def __mainBoard(self):
-        
-        if self.content_texture_id == None:
-            self.content_texture_id = load_texture("textures/board_content.jpg")
-
         glColor3f(0.8, 0.8, 0.8)     
 
         # frente
@@ -87,113 +84,178 @@ class Board:
         glEnd()
 
     def __support(self):
-        glColor3f(0.5, 0.5, 0.5)
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.border_texture_id)
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width * 0.1, 0.0,  -self.width * 0.05)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width * 0.1, 0.0,  self.width * 0.05)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width * 0.1, 0.0,  self.width * 0.05)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width * 0.1, 0.0,  -self.width * 0.05)
         glEnd()
 
     def __edgeBottomUp(self, percent):
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.border_texture_id)
+
         # frente
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, -self.height * percent/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height * percent/2,  -self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height * percent/2,  -self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, -self.height * percent/2,  -self.depth)
         glEnd()
 
         # costas
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, -self.height * percent/2,  self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height * percent/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height * percent/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, -self.height * percent/2,  self.depth)
         glEnd()
 
-        glColor3f(0.6, 0.6, 0.6)
-
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, -self.height * percent/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, -self.height * percent/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(-self.width/2, self.height * percent/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(-self.width/2, self.height * percent/2,  -self.depth)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(self.width/2, -self.height * percent/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(self.width/2, -self.height * percent/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height * percent/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, self.height * percent/2,  -self.depth)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, -self.height * percent/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, -self.height * percent/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, -self.height * percent/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, -self.height * percent/2,  -self.depth)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, self.height * percent/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height * percent/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width/2, self.height * percent/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width/2, self.height * percent/2,  -self.depth)
         glEnd()
+
+        glDisable(GL_TEXTURE_2D)
 
     def __edgeLeftRight(self, percent):
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.border_texture_id)
+
         # frente
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width * percent/2, -self.height/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width * percent/2, self.height/2,  -self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width * percent/2, self.height/2,  -self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width * percent/2, -self.height/2,  -self.depth)
         glEnd()
 
         # costas
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width * percent/2, -self.height/2,  self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width * percent/2, self.height/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width * percent/2, self.height/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width * percent/2, -self.height/2,  self.depth)
         glEnd()
 
-        glColor3f(0.6, 0.6, 0.6)
-
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width * percent/2, -self.height/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width * percent/2, -self.height/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(-self.width * percent/2, self.height/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(-self.width * percent/2, self.height/2,  -self.depth)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(self.width * percent/2, -self.height/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(self.width * percent/2, -self.height/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width * percent/2, self.height/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width * percent/2, self.height/2,  -self.depth)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width * percent/2, -self.height/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width * percent/2, -self.height/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width * percent/2, -self.height/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width * percent/2, -self.height/2,  -self.depth)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-self.width * percent/2, self.height/2,  -self.depth)
+        glTexCoord2f(1, 0)
         glVertex3f(-self.width * percent/2, self.height/2,  self.depth)
+        glTexCoord2f(1, 1)
         glVertex3f(self.width * percent/2, self.height/2,  self.depth)
+        glTexCoord2f(0, 1)
         glVertex3f(self.width * percent/2, self.height/2,  -self.depth)
         glEnd()
+
+        glDisable(GL_TEXTURE_2D)
 
     def __draw_object(self):
+        if self.content_texture_id == None:
+            self.content_texture_id = load_texture("textures/board_content.png")
+
+        if self.border_texture_id == None:
+            self.border_texture_id = load_texture("textures/aluminium.jpg")
 
         self.__mainBoard()
         glPushMatrix()
+
         glTranslatef(0, -self.height/2, 0.0)
         self.__edgeBottomUp(0.05)
         glPopMatrix()

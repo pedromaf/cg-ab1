@@ -65,6 +65,9 @@ for i in range(-number_of_windows+1, 1):
 
 axis_enabled = True
 
+light_on = True
+day_light = True
+
 axis = Axis()
 
 ground = Ground(camera_x, camera_z, view_range)
@@ -78,8 +81,7 @@ right_fan = Fan(room_x + room_width * 0.70, room_y + room_height - 3, room_z - r
 
 left_table = Table(room_x + 4,               room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
 right_table = Table(room_x + room_width - 4, room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
-
-back_table = Table(room_x + room_width/2, room_y, room_z - room_width + 4, 8, room_width * 0.73, 6, 1)
+back_table = Table(room_x + room_width/2,    room_y, room_z - room_width + 4, 8,       room_width * 0.73, 6, 1)
 
 right_chair = Chair(room_x + room_width - 10, room_y, room_z - room_width + 25, 5, 6, 1, 0)
 left_chair = Chair(room_x + 10,               room_y, room_z - room_width + 25, 5, 6, 1, 180)
@@ -93,8 +95,13 @@ board = Board(room_x + 45, room_y + 15, room_z - 0.4, 15, 25, 0.3, 1, 180)
 def display():
     global room, axis, door
     global camera_movement_velocity, current_window_width, current_window_height
+    global day_light
 
-    glClearColor(0, 0, 0, 1)
+    if day_light:
+        glClearColor(0.5, 0.8, 1, 1)
+    else:
+        glClearColor(0.08, 0.08, 0.2, 1)
+         
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     glEnable(GL_DEPTH_TEST)
@@ -136,8 +143,10 @@ def display():
     draw_text(f"[Z] Control windows", [0, current_window_height - 50], current_window_width, current_window_height)
     draw_text(f"[N] Decrease speed", [0, current_window_height - 75], current_window_width, current_window_height)
     draw_text(f"[M] Increase speed", [0, current_window_height - 100], current_window_width, current_window_height)
-    draw_text(f"[O] Fullscreen", [0, current_window_height - 125], current_window_width, current_window_height)
-    draw_text(f"[X] Show axis", [0, current_window_height - 150], current_window_width, current_window_height)
+    draw_text(f"[L] Light ON/OFF", [0, current_window_height - 125], current_window_width, current_window_height)
+    draw_text(f"[O] Fullscreen", [0, current_window_height - 150], current_window_width, current_window_height)
+    draw_text(f"[X] Show axis", [0, current_window_height - 175], current_window_width, current_window_height)
+    draw_text(f"[K] Day/Night", [0, current_window_height - 200], current_window_width, current_window_height)
     
     draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25], current_window_width, current_window_height)
     # end draw code
@@ -178,7 +187,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
-    global room, door_animation, axis_enabled, window_animation
+    global room, door_animation, axis_enabled, window_animation, light_on, day_light
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -216,6 +225,14 @@ def keyboard_handler(key, mouse_x, mouse_y):
             camera_movement_velocity -= 0.5
     elif key == b'x' or key == b'X':
         axis_enabled = not axis_enabled
+    elif key == b'l' or key == b'L':
+        if light_on:
+            glDisable(GL_LIGHT0)
+        else:
+            glEnable(GL_LIGHT0)
+        light_on = not light_on
+    elif key == b'k' or key == b'K':
+        day_light = not day_light
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -283,6 +300,7 @@ def main():
     glutCreateWindow("Laboratorio de Controle")
 
     glutSetCursor(GLUT_CURSOR_NONE)
+    glEnable(GL_DEPTH_TEST)
 
     glutDisplayFunc(display)
     glutKeyboardFunc(keyboard_handler)
