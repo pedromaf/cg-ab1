@@ -53,7 +53,7 @@ class CeilingLamp:
             zr1 = cos(lat1) * radius
 
             glBegin(GL_TRIANGLE_STRIP)
-            glColor4f(1.0,1.0,1.0, 0.5)
+            glColor4f(1.0,1.0,1.0, 0.7)
 
             for j in range(slices, -1, -1):
                 lng = 2 * pi * float(j - 1) / float(slices)

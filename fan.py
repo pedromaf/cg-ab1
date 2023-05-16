@@ -2,6 +2,8 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from math import *
 
+from texture_handler import load_texture
+
 class Fan:
     def __init__(self, x, y, z, size):
         self.x = x
@@ -9,8 +11,14 @@ class Fan:
         self.z = z
         self.rotation_angle = 0.0
         self.size = size
+        self.blade_texture_id = None
     
     def draw(self):
+        if self.blade_texture_id == None:
+            self.blade_texture_id = load_texture("textures/fan_blade.jpg")
+
+        glColor3f(1, 1, 1)
+
         glPushMatrix()
 
         glTranslate(self.x, self.y, self.z)
@@ -20,6 +28,8 @@ class Fan:
         self.__draw_object()
         
         glPopMatrix()
+
+        glNormal3f(0,0,-1)
 
         glPushMatrix()
         glTranslate(self.x, self.y, self.z)
@@ -59,34 +69,53 @@ class Fan:
         glutTimerFunc(10, self.animation, value)
 
     def __draw_object(self):
-        glColor3f(0, 0, 0)
+        glNormal3f(0, 1, 0)
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.blade_texture_id)
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(0.5, 0.0, 0.5)
+        glTexCoord2f(1, 0)
         glVertex3f(5.0, 0.0, 0.5)
+        glTexCoord2f(1, 1)
         glVertex3f(5.0, 0.0, -0.5)
+        glTexCoord2f(0, 1)
         glVertex3f(0.5, 0.0, -0.5)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(-0.5, 0.0, 0.5)
+        glTexCoord2f(1, 0)
         glVertex3f(-5.0, 0.0, 0.5)
+        glTexCoord2f(1, 1)
         glVertex3f(-5.0, 0.0, -0.5)
+        glTexCoord2f(0, 1)
         glVertex3f(-0.5, 0.0, -0.5)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(0.5, 0.0, -0.5)
+        glTexCoord2f(1, 0)
         glVertex3f(0.5, 0.0, -5.0)
+        glTexCoord2f(1, 1)
         glVertex3f(-0.5, 0.0, -5.0)
+        glTexCoord2f(0, 1)
         glVertex3f(-0.5, 0.0, -0.5)
         glEnd()
 
         glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
         glVertex3f(0.5, 0.0, 0.5)
+        glTexCoord2f(1, 0)
         glVertex3f(0.5, 0.0, 5.0)
+        glTexCoord2f(1, 1)
         glVertex3f(-0.5, 0.0, 5.0)
+        glTexCoord2f(0, 1)
         glVertex3f(-0.5, 0.0, 0.5)
         glEnd()
 
+        glDisable(GL_TEXTURE_2D)
         

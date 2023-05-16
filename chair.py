@@ -67,6 +67,12 @@ class Chair:
         glEnd()
 
     def __encosto(self):
+        if self.rotation_angle > 0:
+            glNormal3f(0,0,1)
+        else:
+            glNormal3f(0,0,-1)
+
+
         glBegin(GL_QUADS)
         glVertex3f(-self.width/2, self.height, -self.depth/2)
         glVertex3f(-self.width/2, self.height, self.depth/2)
