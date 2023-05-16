@@ -58,6 +58,7 @@ room_z = -10
 axis_enabled = True
 
 room_light_on = True
+lamp_light_on = True
 day_light_on = True
 ambient_light_value = [0.7, 0.7, 0.7, 1.0]
 
@@ -98,7 +99,7 @@ board = Board(room_x + 45, room_y + 15, room_z - 0.4, 15, 25, 0.3, 1, 180)
 
 ceiling_lamp = CeilingLamp(room_x, room_y, room_z, room_height, room_width)
 
-table_lamp = TableLamp(room_x + room_width/2, room_y + 8, room_z - room_width+0.8,  5.0, -90)
+table_lamp = TableLamp(85, 8, -78,  5.0, -180)
 
 def display():
     global room, axis, door
@@ -143,16 +144,16 @@ def display():
 
     ceiling_lamp.draw()
 
-
     draw_text(f"[Mouse Left] Control door", [0, current_window_height], current_window_width, current_window_height)
     draw_text(f"[W, A, S, D] Navigate", [0, current_window_height - 25], current_window_width, current_window_height)
     draw_text(f"[Z] Control windows", [0, current_window_height - 50], current_window_width, current_window_height)
     draw_text(f"[N] Decrease speed", [0, current_window_height - 75], current_window_width, current_window_height)
     draw_text(f"[M] Increase speed", [0, current_window_height - 100], current_window_width, current_window_height)
     draw_text(f"[L] Light ON/OFF", [0, current_window_height - 125], current_window_width, current_window_height)
-    draw_text(f"[O] Fullscreen", [0, current_window_height - 150], current_window_width, current_window_height)
-    draw_text(f"[X] Show axis", [0, current_window_height - 175], current_window_width, current_window_height)
-    draw_text(f"[K] Day/Night", [0, current_window_height - 200], current_window_width, current_window_height)
+    draw_text(f"[P] Lamp ON/OFF", [0, current_window_height - 150], current_window_width, current_window_height)
+    draw_text(f"[O] Fullscreen", [0, current_window_height - 175], current_window_width, current_window_height)
+    draw_text(f"[X] Show axis", [0, current_window_height - 200], current_window_width, current_window_height)
+    draw_text(f"[K] Day/Night", [0, current_window_height - 225], current_window_width, current_window_height)
     
     draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25], current_window_width, current_window_height)
     # end draw code
@@ -193,7 +194,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
-    global room, door_animation, axis_enabled, window_animation, room_light_on, day_light_on
+    global room, door_animation, axis_enabled, window_animation, room_light_on, day_light_on, lamp_light_on
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -241,6 +242,12 @@ def keyboard_handler(key, mouse_x, mouse_y):
         room_light_on = not room_light_on
     elif key == b'k' or key == b'K':
         day_light_on = not day_light_on
+    elif key == b'p' or key == b'P':
+        if lamp_light_on:
+            glDisable(GL_LIGHT2)
+        else:
+            glEnable(GL_LIGHT2)
+        lamp_light_on = not lamp_light_on
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -309,6 +316,11 @@ def lighting():
     material_specular = (0.2, 0.2, 0.2, 0.5)
     material_shininess = 36.0  
 
+    luzDifusaSpot = [1, 1.0, 1.0, 1.0]  
+    luzEspecSpot = [1, 0.3, 0.3, 1]  
+    posLuzSpot =   [55.0, 39, -45.0, 1]
+    dirLuzSpot = [55.0, 13, -45.0] 
+
     if day_light_on:
         ambient_light_value = [0.7, 0.7, 0.7, 1.0]
         glClearColor(0.5, 0.8, 1, 1)
@@ -327,6 +339,12 @@ def lighting():
     glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular)
     glLightfv(GL_LIGHT1, GL_DIFFUSE, luzEspecular)
 
+    glLightfv( GL_LIGHT2, GL_SPOT_CUTOFF, 50)
+    glLightfv( GL_LIGHT2, GL_POSITION,  posLuzSpot)
+    glLightfv( GL_LIGHT2, GL_SPOT_DIRECTION, dirLuzSpot)
+    glLightfv( GL_LIGHT2, GL_DIFFUSE, luzDifusaSpot )
+    glLightfv( GL_LIGHT2, GL_SPECULAR, luzEspecSpot )
+
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_specular)
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material_shininess)
 
@@ -334,6 +352,7 @@ def init_light():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
     glEnable(GL_LIGHT1)
+    glEnable(GL_LIGHT2)
     glShadeModel(GL_SMOOTH)
     glEnable(GL_COLOR_MATERIAL)
     glEnable(GL_NORMALIZE)

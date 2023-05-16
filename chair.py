@@ -22,6 +22,7 @@ class Chair:
         glPopMatrix()
 
     def __tampo(self):
+        glNormal3f(0, 1, 0)
         # tampo
         glBegin(GL_QUADS)
         glVertex3f(-self.width/2, self.height, -self.depth/2)
@@ -72,14 +73,13 @@ class Chair:
         else:
             glNormal3f(0,0,-1)
 
-
         glBegin(GL_QUADS)
         glVertex3f(-self.width/2, self.height, -self.depth/2)
         glVertex3f(-self.width/2, self.height, self.depth/2)
         glVertex3f(-self.width/2, self.height * 2.3, self.depth/2)
         glVertex3f(-self.width/2, self.height * 2.3, -self.depth/2)
         glEnd()
-
+        
         glBegin(GL_QUADS)
         glVertex3f(-self.width/2 * 0.8, self.height, -self.depth/2)
         glVertex3f(-self.width/2 * 0.8, self.height, self.depth/2)
