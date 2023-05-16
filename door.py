@@ -22,9 +22,12 @@ class Door:
 
         depth = 0.5
 
+        glColor3f(1, 1, 1)
+
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.door_texture_id)
-
+        
+        glNormal3f(0, 0, 1)
         glBegin(GL_QUADS)
         glTexCoord2f(0, 0)
         glVertex3f(self.x,              self.y, self.z)
@@ -36,7 +39,7 @@ class Door:
         glVertex3f(self.x,              self.y + self.height, self.z)
         glEnd()
 
-
+        glNormal3f(0, 0, -1)
         glBegin(GL_QUADS)
         glTexCoord2f(0, 0)
         glVertex3f(self.x,              self.y, self.z - depth)
@@ -51,7 +54,8 @@ class Door:
         glDisable(GL_TEXTURE_2D)
 
         glColor3f(0.4, 0.4, 0.4)
-
+        
+        glNormal3f(1, 0, 0)
         glBegin(GL_QUADS)
         glVertex3f(self.x, self.y, self.z)
         glVertex3f(self.x, self.y, self.z - depth)

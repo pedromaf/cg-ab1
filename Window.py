@@ -27,9 +27,10 @@ class Window:
         self.rotation_angle = 0
 
     def draw_cube(self, vertices):
+        glColor3f(0.5, 0.5, 0.5)
+        
         glNormal3f(0, 0, 1)
         glBegin(GL_QUADS)
-        glColor3f(0.5, 0.5, 0.5)
         # front face
         for vertex in vertices:
             glVertex3f(*vertex)
@@ -52,12 +53,10 @@ class Window:
         glVertex3f(*vertices[2])
         glVertex3f(*vertices[3])
 
-
         # back face
         for vertex in vertices:
             glVertex3f(vertex[0], vertex[1], vertex[2] - self.window_depth)    
         
-
         #bottom face
         glVertex3f(*vertices[0])
         glVertex3f(vertices[1][0], vertices[1][1], vertices[1][2] - self.window_depth)

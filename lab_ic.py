@@ -2,6 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from math import *
+from table_lamb import TableLamp
 
 from text import *
 from room import Room
@@ -97,6 +98,8 @@ board = Board(room_x + 45, room_y + 15, room_z - 0.4, 15, 25, 0.3, 1, 180)
 
 ceiling_lamp = CeilingLamp(room_x, room_y, room_z, room_height, room_width)
 
+table_lamp = TableLamp(room_x + room_width/2, room_y + 8, room_z - room_width+0.8,  5.0, -90)
+
 def display():
     global room, axis, door
     global camera_movement_velocity, current_window_width, current_window_height
@@ -119,6 +122,8 @@ def display():
     right_table.draw()
     back_table.draw()
 
+    table_lamp.draw()
+
     door.draw()
     
     board.draw()
@@ -137,6 +142,7 @@ def display():
     right_fan.draw()
 
     ceiling_lamp.draw()
+
 
     draw_text(f"[Mouse Left] Control door", [0, current_window_height], current_window_width, current_window_height)
     draw_text(f"[W, A, S, D] Navigate", [0, current_window_height - 25], current_window_width, current_window_height)

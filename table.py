@@ -35,6 +35,9 @@ class Table:
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.table_texture_id)
 
+        glColor3f(1, 1, 1)
+
+        glNormal3f(0, 1, 0)
         glBegin(GL_QUADS)
         glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height, -self.depth/2)
@@ -47,6 +50,7 @@ class Table:
         glEnd()
 
         # tampo de baixo
+        glNormal3f(0, -1, 0)
         glBegin(GL_QUADS)
         glTexCoord2f(1, 0)
         glVertex3f(-self.width/2, self.height * 0.95, -self.depth/2)
@@ -58,6 +62,7 @@ class Table:
         glVertex3f(-self.width/2, self.height * 0.95, self.depth/2)
         glEnd()
 
+        glNormal3f(1, 0, 0)
         glBegin(GL_QUADS)
         glTexCoord2f(0, 0)
         glVertex3f(-self.width/2, self.height * 0.95, -self.depth/2)
