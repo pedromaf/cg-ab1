@@ -2,7 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from math import *
-from table_lamb import TableLamp
+from table_lamp import TableLamp
 
 from text import *
 from room import Room
@@ -58,7 +58,9 @@ room_z = -10
 axis_enabled = True
 
 room_light_on = True
-lamp_light_on = True
+lamp_left_on = False
+lamp_center_on = False
+lamp_right_on = False
 day_light_on = True
 ambient_light_value = [0.7, 0.7, 0.7, 1.0]
 
@@ -88,7 +90,7 @@ left_table = Table(room_x + 4,               room_y, room_z - room_width * 0.70,
 right_table = Table(room_x + room_width - 4, room_y, room_z - room_width * 0.70, 8, 6, room_width * 0.5279, 1)
 back_table = Table(room_x + room_width/2,    room_y, room_z - room_width + 4, 8,       room_width * 0.73, 6, 1)
 
-right_chair = Chair(room_x + room_width - 10, room_y, room_z - room_width + 25, 5, 6, 1, 0)
+right_chair = Chair(room_x + room_width - 10, room_y, room_z - room_width + 35, 5, 6, 1, 0)
 left_chair = Chair(room_x + 10,               room_y, room_z - room_width + 25, 5, 6, 1, 180)
 
 back_chair1 = Chair(room_x + room_width - 20, room_y, room_z - room_width + 15, 5, 6, 1, 90)
@@ -99,7 +101,9 @@ board = Board(room_x + 45, room_y + 15, room_z - 0.4, 15, 25, 0.3, 1, 180)
 
 ceiling_lamp = CeilingLamp(room_x, room_y, room_z, room_height, room_width)
 
-table_lamp = TableLamp(85, 8, -78,  5.0, -180)
+table_lamp_r = TableLamp(87, 8, -45,  5.0, -180)
+table_lamp_c = TableLamp(56, 8, -79,  5.0, -90)
+table_lamp_l = TableLamp(21, 8, -45,  5.0, 0)
 
 def display():
     global room, axis, door
@@ -123,7 +127,10 @@ def display():
     right_table.draw()
     back_table.draw()
 
-    table_lamp.draw()
+
+    table_lamp_l.draw()
+    table_lamp_r.draw()
+    table_lamp_c.draw()
 
     door.draw()
     
@@ -154,7 +161,6 @@ def display():
     draw_text(f"[O] Fullscreen", [0, current_window_height - 175], current_window_width, current_window_height)
     draw_text(f"[X] Show axis", [0, current_window_height - 200], current_window_width, current_window_height)
     draw_text(f"[K] Day/Night", [0, current_window_height - 225], current_window_width, current_window_height)
-    
     draw_text(f"Camera speed: {camera_movement_velocity} | Camera coordinates {round(camera_x), round(camera_y), round(camera_z)}", [0, 25], current_window_width, current_window_height)
     # end draw code
 
@@ -194,7 +200,7 @@ def mouse_movement_handler(x, y):
 
 def keyboard_handler(key, mouse_x, mouse_y):
     global camera_x, camera_y, camera_z, camera_rot_hori, camera_rot_vert, camera_movement_velocity
-    global room, door_animation, axis_enabled, window_animation, room_light_on, day_light_on, lamp_light_on
+    global room, door_animation, axis_enabled, window_animation, room_light_on, day_light_on, lamp_left_on, lamp_center_on, lamp_right_on
 
     speed = camera_movement_velocity
     forward = [sin(radians(camera_rot_hori)), sin(
@@ -242,12 +248,25 @@ def keyboard_handler(key, mouse_x, mouse_y):
         room_light_on = not room_light_on
     elif key == b'k' or key == b'K':
         day_light_on = not day_light_on
-    elif key == b'p' or key == b'P':
-        if lamp_light_on:
+    elif key == b'1':
+        if lamp_left_on:
+            glDisable(GL_LIGHT4)
+        else:
+            glEnable(GL_LIGHT4)
+        lamp_left_on = not lamp_left_on
+    elif key == b'2':
+        if lamp_center_on:
+            glDisable(GL_LIGHT3)
+        else:
+            glEnable(GL_LIGHT3)
+        lamp_center_on = not lamp_center_on
+    elif key == b'3':
+        if lamp_right_on:
             glDisable(GL_LIGHT2)
         else:
             glEnable(GL_LIGHT2)
-        lamp_light_on = not lamp_light_on
+        lamp_right_on = not lamp_right_on        
+        
 
 def set_visualization():
     glMatrixMode(GL_PROJECTION)
@@ -318,8 +337,12 @@ def lighting():
 
     luzDifusaSpot = [1, 1.0, 1.0, 1.0]  
     luzEspecSpot = [1, 0.3, 0.3, 1]  
-    posLuzSpot =   [55.0, 39, -45.0, 1]
-    dirLuzSpot = [55.0, 13, -45.0] 
+    dirLuzSpot_lr = [0,-1,0]
+    dirLuzSpot_c = [1,-1,0] 
+    posLuzSpotRight =  [86, 12.00, -44, 1.0]
+    posLuzSpotCenter =  [58, 12.00, -76, 1.0]
+    posLuzSpotLeft =  [22, 12.00, -44, 1.0]
+
 
     if day_light_on:
         ambient_light_value = [0.7, 0.7, 0.7, 1.0]
@@ -339,11 +362,33 @@ def lighting():
     glLightfv(GL_LIGHT1, GL_SPECULAR, luzEspecular)
     glLightfv(GL_LIGHT1, GL_DIFFUSE, luzEspecular)
 
-    glLightfv( GL_LIGHT2, GL_SPOT_CUTOFF, 50)
-    glLightfv( GL_LIGHT2, GL_POSITION,  posLuzSpot)
-    glLightfv( GL_LIGHT2, GL_SPOT_DIRECTION, dirLuzSpot)
+    # right
+    glLightfv( GL_LIGHT2, GL_SPOT_CUTOFF, 70)
+    glLightfv( GL_LIGHT2, GL_SPOT_EXPONENT, 1)
+    glLightfv( GL_LIGHT2, GL_POSITION,  posLuzSpotRight)
+    glLightfv( GL_LIGHT2, GL_SPOT_DIRECTION, dirLuzSpot_lr)
     glLightfv( GL_LIGHT2, GL_DIFFUSE, luzDifusaSpot )
     glLightfv( GL_LIGHT2, GL_SPECULAR, luzEspecSpot )
+
+    
+    #center
+    glLightfv( GL_LIGHT3, GL_SPOT_CUTOFF, 75)
+    glLightfv( GL_LIGHT3, GL_SPOT_EXPONENT, 1)
+    glLightfv( GL_LIGHT3, GL_POSITION,  posLuzSpotCenter)
+    glLightfv( GL_LIGHT3, GL_SPOT_DIRECTION, dirLuzSpot_c)
+    glLightfv( GL_LIGHT3, GL_DIFFUSE, luzDifusaSpot )
+    glLightfv( GL_LIGHT3, GL_SPECULAR, luzEspecSpot )
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_specular)
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material_shininess)
+
+    #left
+    glLightfv( GL_LIGHT4, GL_SPOT_CUTOFF, 60)
+    glLightfv( GL_LIGHT4, GL_SPOT_EXPONENT, 1)
+    glLightfv( GL_LIGHT4, GL_POSITION,  posLuzSpotLeft)
+    glLightfv( GL_LIGHT4, GL_SPOT_DIRECTION, dirLuzSpot_lr)
+    glLightfv( GL_LIGHT4, GL_DIFFUSE, luzDifusaSpot )
+    glLightfv( GL_LIGHT4, GL_SPECULAR, luzEspecSpot )
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_specular)
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material_shininess)
@@ -352,7 +397,6 @@ def init_light():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
     glEnable(GL_LIGHT1)
-    glEnable(GL_LIGHT2)
     glShadeModel(GL_SMOOTH)
     glEnable(GL_COLOR_MATERIAL)
     glEnable(GL_NORMALIZE)

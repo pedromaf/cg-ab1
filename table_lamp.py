@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 from math import sin, cos, pi
+from texture_handler import load_texture
 
 width = 2.0
 radius = width * 0.3
@@ -16,9 +17,88 @@ class TableLamp:
         self.base_width = width
         self.pole_width = width*0.05
         self.hori_pole_length = width
+        self.book_texture_id = None
+
+
+    def __draw_book(self):
+        if self.book_texture_id == None:
+            self.book_texture_id = load_texture("textures/book.jpeg")
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.book_texture_id)    
+        
+        glColor3f(1.0,1.0,1.0)
+        
+        #left
+        glNormal3f(0, 1, 0)
+        
+        glBegin(GL_QUADS)
+        glTexCoord2f(0,0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glTexCoord2f(1,0) #
+        glVertex3f(0.0, 1.0, 0.0)
+        glTexCoord2f(0,1) #
+        glVertex3f(1.0, 1.0, 0.0)
+        glTexCoord2f(1,1) #
+        glVertex3f(1.0, 0.0, 0.0)
+        glEnd()
+        glDisable(GL_TEXTURE_2D)
+        
+
+        #right
+        glNormal3f(1, 1, 0)
+        glBegin(GL_QUADS)
+        glVertex3f(0.0, 0.0, -1.0)
+        glVertex3f(0.0, 1.0, -1.0)
+        glVertex3f(1.0, 1.0, -1.0)
+        glVertex3f(1.0, 0.0, -1.0)
+        glEnd()
+        #left
+        glNormal3f(1, 1, 0)
+        glBegin(GL_QUADS)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(0.0, 1.0, 0.0)
+        glVertex3f(0.0, 1.0, -1.0)
+        glVertex3f(0.0, 0.0, -1.0)
+        glEnd()
+
+        #right
+        glBegin(GL_QUADS)
+        glVertex3f(1.0, 0.0, 0.0)
+        glVertex3f(1.0, 1.0, 0.0)
+        glVertex3f(1.0, 1.0, -1.0)
+        glVertex3f(1.0, 0.0, -1.0)
+        glEnd()
+
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.book_texture_id)  
+        #top
+        glNormal3f(0, 1, 0)
+        glBegin(GL_QUADS)
+        glTexCoord2f(1,1)
+        glVertex3f(0.0, 1.0, 0.0)
+        glTexCoord2f(0,1)
+        glVertex3f(0.0, 1.0, -1.0)
+        glTexCoord2f(0,0)
+        glVertex3f(1.0, 1.0, -1.0)
+        glTexCoord2f(1,0)
+        glVertex3f(1.0, 1.0, 0.0)
+        glEnd()
+        glDisable(GL_TEXTURE_2D)
+
+        #bottom
+        glNormal3f(0, -1, 0)
+        glBegin(GL_QUADS)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(0.0, 0.0, -1.0)
+        glVertex3f(1.0, 0.0, -1.0)
+        glVertex3f(1.0, 0.0, 0.0)
+        glEnd()
+
+
+
 
     def __draw_pole(self):
-        glColor3f(1.0,0.0,0.0)
+        glColor3f(1.0,1.0,1.0)
 
         #front
         glNormal3f(0, 1, 0)
@@ -130,11 +210,23 @@ class TableLamp:
         self.__draw_pole()
         glPopMatrix()
 
+        #base
         glPushMatrix()
         glTranslatef(-(self.base_width/2), 0, self.base_width/2)
         glScalef(self.base_width, self.pole_width, self.base_width)
         self.__draw_pole()
         glPopMatrix()
+
+
+        glPushMatrix()
+        glTranslatef(self.base_width, 0, self.base_width - 2)
+        glScalef(2, 0.5, 3)
+
+
+        self.__draw_book()
+        glPopMatrix()
+
+        
         
     def draw(self):
         glPushMatrix()
