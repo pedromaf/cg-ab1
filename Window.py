@@ -29,7 +29,7 @@ class Window:
     def draw_cube(self, vertices):
         glColor3f(0.5, 0.5, 0.5)
         
-        glNormal3f(0, 0, 1)
+        glNormal3f(1, 0, 0)
         glBegin(GL_QUADS)
         # front face
         for vertex in vertices:

@@ -32,16 +32,11 @@ class TableLamp:
         glNormal3f(0, 1, 0)
         
         glBegin(GL_QUADS)
-        glTexCoord2f(0,0)
         glVertex3f(0.0, 0.0, 0.0)
-        glTexCoord2f(1,0) #
         glVertex3f(0.0, 1.0, 0.0)
-        glTexCoord2f(0,1) #
         glVertex3f(1.0, 1.0, 0.0)
-        glTexCoord2f(1,1) #
         glVertex3f(1.0, 0.0, 0.0)
         glEnd()
-        glDisable(GL_TEXTURE_2D)
         
 
         #right
@@ -52,14 +47,22 @@ class TableLamp:
         glVertex3f(1.0, 1.0, -1.0)
         glVertex3f(1.0, 0.0, -1.0)
         glEnd()
+
+
         #left
         glNormal3f(1, 1, 0)
         glBegin(GL_QUADS)
+        glTexCoord2f(0,0)
         glVertex3f(0.0, 0.0, 0.0)
+        glTexCoord2f(1,0)
         glVertex3f(0.0, 1.0, 0.0)
+        glTexCoord2f(1,1)
         glVertex3f(0.0, 1.0, -1.0)
+        glTexCoord2f(0,1)
         glVertex3f(0.0, 0.0, -1.0)
         glEnd()
+
+        glDisable(GL_TEXTURE_2D)
 
         #right
         glBegin(GL_QUADS)
